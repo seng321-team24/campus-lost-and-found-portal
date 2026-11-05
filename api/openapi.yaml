@@ -1,34 +1,49 @@
 openapi: 3.0.3
 info:
-  title: Kampüs Kayıp Eşya Portalı API
-  description: >
-    Kampüste kaybedilen veya bulunan eşyaların ilan edildiği, sahiplik
-    taleplerinin yapılıp onaylandığı ve durumun takip edildiği sistemin
-    ilk API sözleşmesi (Sprint 1 taslağı).
+  title: Campus Lost and Found Portal API
+  description: |
+    Initial API contract (Sprint 1 draft) for the Campus Lost and Found Portal,
+    a centralized web platform where university students and staff publish,
+    browse and search lost and found item listings and submit ownership claims.
+
+    Team 24. Prepared by K3 (Software Architect).
+
+    Traceability: every operation lists the Initial Product Backlog user
+    stories it supports (US-01 to US-10) or the Project Proposal scope item
+    (section 6.1) it supports. Claim operations and moderation come from the
+    Project Proposal; the backlog does not yet contain user stories for them.
+
+    Privacy: listings never expose contact details. The proof text of a claim
+    is visible only to the claimant, the listing owner and moderators.
+
+    Open decisions that may change this draft: login method (ordinary
+    credentials are assumed), allowed item categories, accepted image formats
+    and maximum image size.
   version: 0.1.0
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
 servers:
   - url: http://localhost:8080/api/v1
-    description: Yerel geliştirme
+    description: Local development
 tags:
   - name: Auth
-    description: Kayıt ve giriş
-  - name: Items
-    description: Kayıp ve bulunan eşya ilanları
-  - name: Claims
-    description: Sahiplik talepleri
+    description: Registration and login (User Management epic)
   - name: Users
-    description: Kullanıcı profili
+    description: Profile, own listings and own claims
+  - name: Items
+    description: Lost and found listings
   - name: Categories
-    description: Eşya kategorileri
+    description: Item categories used for classification and filtering
+  - name: Claims
+    description: Ownership claim requests and their review
 
 paths:
   /auth/register:
     post:
       tags: [Auth]
-      summary: Yeni kullanıcı kaydı
+      summary: Register a new user
+      description: 'Backlog: US-01. The system validates the data before creating the account.'
       operationId: registerUser
       requestBody:
         required: true
@@ -36,17 +51,21 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/RegisterRequest'
+            example:
+              fullName: Ayse Yilmaz
+              email: ayse@university.edu.tr
+              password: S3cure-pass
       responses:
         '201':
-          description: Kullanıcı oluşturuldu
+          description: User created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
               example:
                 id: 1
-                fullName: Ayşe Yılmaz
-                email: ayse@universite.edu.tr
+                fullName: Ayse Yilmaz
+                email: ayse@university.edu.tr
                 role: STUDENT
                 createdAt: '2026-11-05T10:00:00Z'
         '400':
@@ -57,7 +76,8 @@ paths:
   /auth/login:
     post:
       tags: [Auth]
-      summary: Giriş yap ve token al
+      summary: Log in and obtain an access token
+      description: 'Backlog: US-02. Invalid credentials return 401 with an error message.'
       operationId: loginUser
       requestBody:
         required: true
@@ -65,9 +85,12 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/LoginRequest'
+            example:
+              email: ayse@university.edu.tr
+              password: S3cure-pass
       responses:
         '200':
-          description: Giriş başarılı
+          description: Login successful
           content:
             application/json:
               schema:
@@ -84,56 +107,136 @@ paths:
   /users/me:
     get:
       tags: [Users]
-      summary: Oturumdaki kullanıcının profili
+      summary: View my profile
+      description: 'Proposal 6.1: user profile viewing.'
       operationId: getCurrentUser
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: Kullanıcı profili
+          description: Profile of the logged-in user
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+              example:
+                id: 1
+                fullName: Ayse Yilmaz
+                email: ayse@university.edu.tr
+                role: STUDENT
+                createdAt: '2026-11-05T10:00:00Z'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /users/me/items:
+    get:
+      tags: [Users]
+      summary: List my own listings
+      description: 'Backlog: US-10.'
+      operationId: listMyItems
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Listings created by the logged-in user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+              example:
+                - id: 42
+                  type: FOUND
+                  title: Blue wallet
+                  description: Found at the library entrance.
+                  categoryId: 2
+                  location: Main Library
+                  eventDate: '2026-11-04'
+                  status: OPEN
+                  ownerId: 7
+                  createdAt: '2026-11-04T14:30:00Z'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /users/me/claims:
+    get:
+      tags: [Users]
+      summary: List the claims I have submitted
+      description: 'Proposal 6.1: basic listing and claim management.'
+      operationId: listMyClaims
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Claims submitted by the logged-in user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Claim'
+              example:
+                - id: 15
+                  itemId: 42
+                  claimantId: 9
+                  message: This is my wallet.
+                  status: PENDING
+                  createdAt: '2026-11-05T09:15:00Z'
         '401':
           $ref: '#/components/responses/Unauthorized'
 
   /categories:
     get:
       tags: [Categories]
-      summary: Eşya kategorilerini listele
+      summary: List item categories
+      description: 'Backlog: US-03, US-04, US-07. The final category list is to be agreed by the team.'
       operationId: listCategories
       responses:
         '200':
-          description: Kategori listesi
+          description: List of categories
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Category'
+              example:
+                - id: 1
+                  name: Electronics
+                - id: 2
+                  name: Wallets and cards
+                - id: 3
+                  name: Keys
 
   /items:
     get:
       tags: [Items]
-      summary: İlanları listele ve filtrele
+      summary: List, search and filter listings
+      description: >
+        Backlog: US-05 (view all listings), US-06 (keyword search), US-07
+        (category filter). Proposal 6.1: search by name, filter by category
+        and status.
       operationId: listItems
       parameters:
         - name: type
           in: query
+          description: Show only lost or only found listings
           schema:
             $ref: '#/components/schemas/ItemType'
-        - name: status
-          in: query
-          schema:
-            $ref: '#/components/schemas/ItemStatus'
         - name: categoryId
           in: query
+          description: Filter by category (US-07)
           schema:
             type: integer
+        - name: status
+          in: query
+          description: Filter by listing status
+          schema:
+            $ref: '#/components/schemas/ItemStatus'
         - name: q
           in: query
-          description: Başlık ve açıklamada arama
+          description: Keyword search in title and description (US-06)
           schema:
             type: string
         - name: page
@@ -151,7 +254,7 @@ paths:
             default: 20
       responses:
         '200':
-          description: Sayfalanmış ilan listesi
+          description: Paginated list of listings
           content:
             application/json:
               schema:
@@ -160,9 +263,10 @@ paths:
                 items:
                   - id: 42
                     type: FOUND
-                    title: Mavi cüzdan
-                    categoryId: 3
-                    location: Merkez Kütüphane
+                    title: Blue wallet
+                    description: Found at the library entrance.
+                    categoryId: 2
+                    location: Main Library
                     eventDate: '2026-11-04'
                     status: OPEN
                     ownerId: 7
@@ -174,7 +278,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
     post:
       tags: [Items]
-      summary: Yeni kayıp veya bulunan eşya ilanı oluştur
+      summary: Create a lost or found listing
+      description: 'Backlog: US-03 (lost item), US-04 (found item). Requires login (US-02).'
       operationId: createItem
       security:
         - bearerAuth: []
@@ -186,14 +291,14 @@ paths:
               $ref: '#/components/schemas/ItemCreate'
             example:
               type: FOUND
-              title: Mavi cüzdan
-              description: Kütüphane girişinde bulundu.
-              categoryId: 3
-              location: Merkez Kütüphane
+              title: Blue wallet
+              description: Found at the library entrance.
+              categoryId: 2
+              location: Main Library
               eventDate: '2026-11-04'
       responses:
         '201':
-          description: İlan oluşturuldu
+          description: Listing created
           content:
             application/json:
               schema:
@@ -201,10 +306,10 @@ paths:
               example:
                 id: 42
                 type: FOUND
-                title: Mavi cüzdan
-                description: Kütüphane girişinde bulundu.
-                categoryId: 3
-                location: Merkez Kütüphane
+                title: Blue wallet
+                description: Found at the library entrance.
+                categoryId: 2
+                location: Main Library
                 eventDate: '2026-11-04'
                 status: OPEN
                 ownerId: 7
@@ -219,20 +324,34 @@ paths:
       - $ref: '#/components/parameters/ItemId'
     get:
       tags: [Items]
-      summary: İlan detayı
+      summary: Get listing details
+      description: 'Backlog: US-08.'
       operationId: getItem
       responses:
         '200':
-          description: İlan detayı
+          description: Listing details
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Item'
+              example:
+                id: 42
+                type: FOUND
+                title: Blue wallet
+                description: Found at the library entrance.
+                categoryId: 2
+                location: Main Library
+                eventDate: '2026-11-04'
+                photoUrl: https://example.com/photos/42.jpg
+                status: OPEN
+                ownerId: 7
+                createdAt: '2026-11-04T14:30:00Z'
         '404':
           $ref: '#/components/responses/NotFound'
     put:
       tags: [Items]
-      summary: İlanı güncelle (yalnızca ilan sahibi)
+      summary: Update a listing (listing owner only)
+      description: 'Backlog: "Create and manage" listing features. Proposal 6.1: basic listing management.'
       operationId: updateItem
       security:
         - bearerAuth: []
@@ -242,13 +361,26 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ItemUpdate'
+            example:
+              description: Found at the library entrance, left side.
       responses:
         '200':
-          description: İlan güncellendi
+          description: Listing updated
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Item'
+              example:
+                id: 42
+                type: FOUND
+                title: Blue wallet
+                description: Found at the library entrance, left side.
+                categoryId: 2
+                location: Main Library
+                eventDate: '2026-11-04'
+                status: OPEN
+                ownerId: 7
+                createdAt: '2026-11-04T14:30:00Z'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -259,13 +391,16 @@ paths:
           $ref: '#/components/responses/NotFound'
     delete:
       tags: [Items]
-      summary: İlanı sil (ilan sahibi veya moderatör)
+      summary: Delete a listing (listing owner or moderator)
+      description: >
+        Backlog: "Create and manage" listing features. Proposal 6.1 and
+        section 3: moderators remove inappropriate or misleading listings.
       operationId: deleteItem
       security:
         - bearerAuth: []
       responses:
         '204':
-          description: İlan silindi
+          description: Listing deleted
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -273,24 +408,88 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /items/{itemId}/photo:
+    parameters:
+      - $ref: '#/components/parameters/ItemId'
+    post:
+      tags: [Items]
+      summary: Upload a photo for a listing (listing owner only)
+      description: >
+        Backlog: US-09. Accepted formats and the maximum file size are to be
+        agreed by the team; JPEG and PNG are assumed in this draft.
+      operationId: uploadItemPhoto
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Photo uploaded, updated listing returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+              example:
+                id: 42
+                type: FOUND
+                title: Blue wallet
+                description: Found at the library entrance.
+                categoryId: 2
+                location: Main Library
+                eventDate: '2026-11-04'
+                photoUrl: https://example.com/photos/42.jpg
+                status: OPEN
+                ownerId: 7
+                createdAt: '2026-11-04T14:30:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+
   /items/{itemId}/claims:
     parameters:
       - $ref: '#/components/parameters/ItemId'
     get:
       tags: [Claims]
-      summary: Bir ilana yapılan talepleri listele (ilan sahibi veya moderatör)
+      summary: List the claims made on a listing (listing owner or moderator)
+      description: 'Proposal 6.1: reviewing claim requests.'
       operationId: listItemClaims
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: Talep listesi
+          description: Claims for the listing
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Claim'
+              example:
+                - id: 15
+                  itemId: 42
+                  claimantId: 9
+                  message: This is my wallet.
+                  proof: It contains my student card.
+                  status: PENDING
+                  createdAt: '2026-11-05T09:15:00Z'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -299,7 +498,10 @@ paths:
           $ref: '#/components/responses/NotFound'
     post:
       tags: [Claims]
-      summary: İlan için sahiplik talebi oluştur
+      summary: Submit an ownership claim for a listing
+      description: >
+        Proposal 6.1: submitting ownership claim requests. A user cannot claim
+        their own listing or a listing that is not open.
       operationId: createClaim
       security:
         - bearerAuth: []
@@ -310,11 +512,11 @@ paths:
             schema:
               $ref: '#/components/schemas/ClaimCreate'
             example:
-              message: Cüzdanın içinde öğrenci kartım var.
-              proof: Kartın üzerindeki öğrenci numarası 2021xxxx.
+              message: This is my wallet.
+              proof: It contains my student card.
       responses:
         '201':
-          description: Talep oluşturuldu
+          description: Claim submitted
           content:
             application/json:
               schema:
@@ -323,7 +525,8 @@ paths:
                 id: 15
                 itemId: 42
                 claimantId: 9
-                message: Cüzdanın içinde öğrenci kartım var.
+                message: This is my wallet.
+                proof: It contains my student card.
                 status: PENDING
                 createdAt: '2026-11-05T09:15:00Z'
         '400':
@@ -333,378 +536,28 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
         '409':
-          $ref: '#/components/responses/Conflict'
-
-  /claims/{claimId}/decision:
-    parameters:
-      - name: claimId
-        in: path
-        required: true
-        schema:
-          type: integer
-    post:
-      tags: [Claims]
-      summary: Talebi onayla veya reddet
-      operationId: decideClaim
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ClaimDecision'
-      responses:
-        '200':
-          description: Karar kaydedildi
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Claim'
-              example:
-                id: 15
-                itemId: 42
-                claimantId: 9
-                status: APPROVED
-                decisionNote: Kart bilgisi eşleşti.
-                createdAt: '2026-11-05T09:15:00Z'
-                decidedAt: '2026-11-05T11:00:00Z'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-
-  /users/me/items:
-    get:
-      tags: [Users]
-      summary: Kendi ilanlarım
-      operationId: listMyItems
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Kullanıcının ilanları
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Item'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-
-  /users/me/claims:
-    get:
-      tags: [Users]
-      summary: Kendi taleplerim
-      operationId: listMyClaims
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Kullanıcının talepleri
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Claim'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
-  parameters:
-    ItemId:
-      name: itemId
-      in: path
-      required: true
-      schema:
-        type: integer
-
-  schemas:
-    UserRole:
-      type: string
-      enum: [STUDENT, STAFF, MODERATOR]
-
-    ItemType:
-      type: string
-      description: LOST kaybedilen, FOUND bulunan eşya
-      enum: [LOST, FOUND]
-
-    ItemStatus:
-      type: string
-      description: İlanın yaşam döngüsü durumu
-      enum: [OPEN, CLAIM_PENDING, RETURNED, CLOSED]
-
-    ClaimStatus:
-      type: string
-      enum: [PENDING, APPROVED, REJECTED]
-
-    RegisterRequest:
-      type: object
-      required: [fullName, email, password]
-      properties:
-        fullName:
-          type: string
-          example: Ayşe Yılmaz
-        email:
-          type: string
-          format: email
-          example: ayse@universite.edu.tr
-        password:
-          type: string
-          format: password
-          minLength: 8
-
-    LoginRequest:
-      type: object
-      required: [email, password]
-      properties:
-        email:
-          type: string
-          format: email
-        password:
-          type: string
-          format: password
-
-    TokenResponse:
-      type: object
-      required: [accessToken, tokenType, expiresIn]
-      properties:
-        accessToken:
-          type: string
-        tokenType:
-          type: string
-          example: Bearer
-        expiresIn:
-          type: integer
-          description: Saniye cinsinden geçerlilik süresi
-          example: 3600
-
-    User:
-      type: object
-      required: [id, fullName, email, role]
-      properties:
-        id:
-          type: integer
-          example: 1
-        fullName:
-          type: string
-        email:
-          type: string
-          format: email
-        role:
-          $ref: '#/components/schemas/UserRole'
-        createdAt:
-          type: string
-          format: date-time
-
-    Category:
-      type: object
-      required: [id, name]
-      properties:
-        id:
-          type: integer
-          example: 3
-        name:
-          type: string
-          example: Cüzdan ve kartlar
-
-    ItemCreate:
-      type: object
-      required: [type, title, categoryId, location, eventDate]
-      properties:
-        type:
-          $ref: '#/components/schemas/ItemType'
-        title:
-          type: string
-          maxLength: 120
-        description:
-          type: string
-          maxLength: 1000
-        categoryId:
-          type: integer
-        location:
-          type: string
-          description: Eşyanın kaybedildiği veya bulunduğu yer
-        eventDate:
-          type: string
-          format: date
-        photoUrl:
-          type: string
-          format: uri
-
-    ItemUpdate:
-      type: object
-      properties:
-        title:
-          type: string
-          maxLength: 120
-        description:
-          type: string
-          maxLength: 1000
-        categoryId:
-          type: integer
-        location:
-          type: string
-        photoUrl:
-          type: string
-          format: uri
-        status:
-          $ref: '#/components/schemas/ItemStatus'
-
-    Item:
-      allOf:
-        - $ref: '#/components/schemas/ItemCreate'
-        - type: object
-          required: [id, status, ownerId, createdAt]
-          properties:
-            id:
-              type: integer
-              example: 42
-            status:
-              $ref: '#/components/schemas/ItemStatus'
-            ownerId:
-              type: integer
-              description: İlanı oluşturan kullanıcı
-            createdAt:
-              type: string
-              format: date-time
-
-    ItemPage:
-      type: object
-      required: [items, page, pageSize, total]
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Item'
-        page:
-          type: integer
-        pageSize:
-          type: integer
-        total:
-          type: integer
-
-    ClaimCreate:
-      type: object
-      required: [message]
-      properties:
-        message:
-          type: string
-          maxLength: 500
-        proof:
-          type: string
-          description: Sahipliği doğrulayan ayırt edici bilgi
-          maxLength: 500
-
-    Claim:
-      type: object
-      required: [id, itemId, claimantId, status, createdAt]
-      properties:
-        id:
-          type: integer
-        itemId:
-          type: integer
-        claimantId:
-          type: integer
-        message:
-          type: string
-        proof:
-          type: string
-        status:
-          $ref: '#/components/schemas/ClaimStatus'
-        decisionNote:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        decidedAt:
-          type: string
-          format: date-time
-
-    ClaimDecision:
-      type: object
-      required: [decision]
-      properties:
-        decision:
-          type: string
-          enum: [APPROVED, REJECTED]
-        note:
-          type: string
-          maxLength: 500
-
-    Error:
-      type: object
-      required: [code, message]
-      properties:
-        code:
-          type: string
-          example: VALIDATION_ERROR
-        message:
-          type: string
-          example: İstek geçersiz.
-        details:
-          type: array
-          items:
-            type: string
-
-  responses:
-    BadRequest:
-      description: Geçersiz istek
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: VALIDATION_ERROR
-            message: İstek geçersiz.
-            details: ['title zorunludur']
-    Unauthorized:
-      description: Kimlik doğrulaması gerekli veya geçersiz
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: UNAUTHORIZED
-            message: Giriş yapmalısınız.
-    Forbidden:
-      description: Bu işlem için yetkiniz yok
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: FORBIDDEN
-            message: Bu işlemi yapma yetkiniz yok.
-    NotFound:
-      description: Kaynak bulunamadı
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: NOT_FOUND
-            message: Kayıt bulunamadı.
-    Conflict:
-      description: Kaynak durumu işlemle çakışıyor
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
           example:
             code: CONFLICT
-            message: Bu işlem mevcut durumla çakışıyor.
+            message: This action is not allowed in the current state.
+    PayloadTooLarge:
+      description: The file exceeds the allowed size
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: PAYLOAD_TOO_LARGE
+            message: The file is larger than the allowed size.
+    UnsupportedMediaType:
+      description: The file format is not supported
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: UNSUPPORTED_MEDIA_TYPE
+            message: Only JPEG and PNG images are accepted.
