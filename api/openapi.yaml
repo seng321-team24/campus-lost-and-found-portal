@@ -445,7 +445,6 @@ paths:
                 description: Found at the library entrance.
                 categoryId: 2
                 location: Main Library
-                eventDate: '2026-11-04'
                 photoUrl: https://example.com/photos/42.jpg
                 status: OPEN
                 ownerId: 7
@@ -536,6 +535,340 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
         '409':
+          $ref: '#/components/responses/Conflict'
+
+  /claims/{claimId}/decision:
+    parameters:
+      - name: claimId
+        in: path
+        required: true
+        schema:
+          type: integer
+    post:
+      tags: [Claims]
+      summary: Accept or reject a claim (listing owner or moderator)
+      description: >
+        Proposal 6.1: reviewing claim requests. Accepting a claim sets the
+        listing status to CLAIMED. Physical handover happens outside the
+        platform. The system does not verify ownership automatically.
+      operationId: decideClaim
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClaimDecision'
+            example:
+              decision: APPROVED
+              note: The proof matches the item.
+      responses:
+        '200':
+          description: Decision recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Claim'
+              example:
+                id: 15
+                itemId: 42
+                claimantId: 9
+                message: This is my wallet.
+                proof: It contains my student card.
+                status: APPROVED
+                decisionNote: The proof matches the item.
+                createdAt: '2026-11-05T09:15:00Z'
+                decidedAt: '2026-11-05T11:00:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    ItemId:
+      name: itemId
+      in: path
+      required: true
+      schema:
+        type: integer
+
+  schemas:
+    UserRole:
+      type: string
+      enum: [STUDENT, STAFF, MODERATOR]
+
+    ItemType:
+      type: string
+      description: LOST for a lost item, FOUND for a found item
+      enum: [LOST, FOUND]
+
+    ItemStatus:
+      type: string
+      description: >
+        OPEN while the listing is active, CLAIM_PENDING while a claim awaits
+        review, CLAIMED after a claim is accepted, CLOSED when the listing is
+        closed.
+      enum: [OPEN, CLAIM_PENDING, CLAIMED, CLOSED]
+
+    ClaimStatus:
+      type: string
+      enum: [PENDING, APPROVED, REJECTED]
+
+    RegisterRequest:
+      type: object
+      required: [fullName, email, password]
+      properties:
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    TokenResponse:
+      type: object
+      required: [accessToken, tokenType, expiresIn]
+      properties:
+        accessToken:
+          type: string
+        tokenType:
+          type: string
+        expiresIn:
+          type: integer
+          description: Token lifetime in seconds
+
+    User:
+      type: object
+      required: [id, fullName, email, role]
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          $ref: '#/components/schemas/UserRole'
+        createdAt:
+          type: string
+          format: date-time
+
+    Category:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    ItemCreate:
+      type: object
+      description: >
+        Required fields follow backlog US-03 and US-04 (name, description,
+        category, location). The date is optional (Proposal 3).
+      required: [type, title, description, categoryId, location]
+      properties:
+        type:
+          $ref: '#/components/schemas/ItemType'
+        title:
+          type: string
+          description: Item name
+          maxLength: 120
+        description:
+          type: string
+          maxLength: 1000
+        categoryId:
+          type: integer
+        location:
+          type: string
+          description: Approximate place where the item was lost or found
+        eventDate:
+          type: string
+          format: date
+          description: Approximate date the item was lost or found
+
+    ItemUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 120
+        description:
+          type: string
+          maxLength: 1000
+        categoryId:
+          type: integer
+        location:
+          type: string
+        eventDate:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/ItemStatus'
+
+    Item:
+      allOf:
+          properties:
+            id:
+              type: integer
+            photoUrl:
+              type: string
+              format: uri
+            status:
+              $ref: '#/components/schemas/ItemStatus'
+            ownerId:
+              type: integer
+              description: User who created the listing
+            createdAt:
+              type: string
+              format: date-time
+
+    ItemPage:
+      type: object
+      required: [items, page, pageSize, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        total:
+          type: integer
+
+    ClaimCreate:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          maxLength: 500
+        proof:
+          type: string
+          description: Distinguishing detail supporting the ownership claim
+          maxLength: 500
+
+    Claim:
+      type: object
+      required: [id, itemId, claimantId, status, createdAt]
+      properties:
+        id:
+          type: integer
+        itemId:
+          type: integer
+        claimantId:
+          type: integer
+        message:
+          type: string
+        proof:
+          type: string
+        status:
+          $ref: '#/components/schemas/ClaimStatus'
+        decisionNote:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        decidedAt:
+          type: string
+          format: date-time
+
+    ClaimDecision:
+      type: object
+      required: [decision]
+      properties:
+        decision:
+          type: string
+          enum: [APPROVED, REJECTED]
+        note:
+          type: string
+          maxLength: 500
+
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: string
+
+  responses:
+    BadRequest:
+      description: Invalid request or failed validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: VALIDATION_ERROR
+            message: The request is invalid.
+            details: ['title is required']
+    Unauthorized:
+      description: Authentication required or credentials invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: UNAUTHORIZED
+            message: Invalid credentials or missing token.
+    Forbidden:
+      description: The user is not allowed to perform this action
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: FORBIDDEN
+            message: Only the listing owner or a moderator can do this.
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: NOT_FOUND
+            message: Listing not found.
+    Conflict:
+      description: The request conflicts with existing data or the current state
       content:
         application/json:
           schema:
