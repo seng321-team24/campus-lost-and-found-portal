@@ -7,13 +7,13 @@
 
 ## Team members and responsibilities
 
-| Name | GitHub | Role | Responsibilities |
-|---|---|---|---|
-| İrem Köse | [irem-ks](https://github.com/irem-ks) | Product Owner | Accountable for the Initial Product Backlog (epics, features, user stories, acceptance criteria, estimates, dependencies, owners). Contributes to the Project Proposal: problem definition, survey evidence, stakeholder analysis, expected outcomes. |
-| Tuğba Kezban Çay | [tugbacay21](https://github.com/tugbacay21) | Scrum Master | Accountable for Roles & RACI Matrix and CONTRIBUTIONS.md. Contributes to the Project Proposal: assumptions, risks, license decision (MIT rationale). Coordinates contribution evidence and supports delivery preparation. By team agreement, Berra prepares the final ZIP and submits it on Microsoft Teams with the repository link. |
-| Aslıhan Kaçmaz | [Aslhnnkcmaaz](https://github.com/Aslhnnkcmaaz) | Architect | Accountable for the OpenAPI Draft (valid YAML, schemas, error responses). Contributes to System Vision & Boundary: system context diagram and external system interactions. |
-| Ceren Torun | [ccerentrn](https://github.com/ccerentrn) | QA Engineer | Accountable for System Vision & Boundary (purpose, users, functions, in/out of scope, constraints). Validates (lints) the OpenAPI file, reviews backlog acceptance criteria. Contributes to the Project Proposal: feasibility and first release scope. |
-| Berra Bayındır | [BerraB1](https://github.com/BerraB1) | DevOps Engineer | Accountable for Repository & Git-Flow (develop branch, branch protection rules, issue/PR templates, `sprint-1` release tag). Manages collaborator access and repository folder structure. By team agreement, prepares and checks the final ZIP and submits it on Microsoft Teams with the repository link. |
+| Name | Student Number | GitHub | Role | Responsibilities |
+|---|---|---|---|---|
+| İrem Köse | 220205035 | [irem-ks](https://github.com/irem-ks) | Product Owner | Accountable for the Initial Product Backlog (epics, features, user stories, acceptance criteria, estimates, dependencies, owners). Contributes to the Project Proposal: problem definition, survey evidence, stakeholder analysis, expected outcomes. |
+| Tuğba Kezban Çay | 220205038 | [tugbacay21](https://github.com/tugbacay21) | Scrum Master | Accountable for Roles & RACI Matrix and CONTRIBUTIONS.md. Contributes to the Project Proposal: assumptions, risks, license decision (MIT rationale). Coordinates contribution evidence and supports delivery preparation. By team agreement, Berra prepares the final ZIP and submits it on Microsoft Teams with the repository link. |
+| Aslıhan Kaçmaz | 230201035 | [Aslhnnkcmaaz](https://github.com/Aslhnnkcmaaz) | Architect | Accountable for the OpenAPI Draft (valid YAML, schemas, error responses). Contributes to System Vision & Boundary: system context diagram and external system interactions. |
+| Ceren Torun | 230201011 | [ccerentrn](https://github.com/ccerentrn) | QA Engineer | Accountable for System Vision & Boundary (purpose, users, functions, in/out of scope, constraints). Validates (lints) the OpenAPI file, reviews backlog acceptance criteria. Contributes to the Project Proposal: feasibility and first release scope. |
+| Berra Bayındır | 220201041 | [BerraB1](https://github.com/BerraB1) | DevOps Engineer | Accountable for Repository & Git-Flow (develop branch, branch protection rules, issue/PR templates, `sprint-1` release tag). Manages collaborator access and repository folder structure. By team agreement, prepares and checks the final ZIP and submits it on Microsoft Teams with the repository link. |
 
 ## Contribution and review evidence
 
@@ -36,4 +36,3 @@ The following statuses were checked against GitHub on 5 November 2026. An approv
 - By team agreement, Berra Bayındır is responsible for final ZIP preparation/checks and Microsoft Teams submission with the repository link. Submission completion has not been recorded here.
 
 **Repository:** https://github.com/seng321-team24/campus-lost-and-found-portal
-
