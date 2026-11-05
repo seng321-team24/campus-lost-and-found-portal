@@ -1,0 +1,710 @@
+openapi: 3.0.3
+info:
+  title: Kampüs Kayıp Eşya Portalı API
+  description: >
+    Kampüste kaybedilen veya bulunan eşyaların ilan edildiği, sahiplik
+    taleplerinin yapılıp onaylandığı ve durumun takip edildiği sistemin
+    ilk API sözleşmesi (Sprint 1 taslağı).
+  version: 0.1.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Yerel geliştirme
+tags:
+  - name: Auth
+    description: Kayıt ve giriş
+  - name: Items
+    description: Kayıp ve bulunan eşya ilanları
+  - name: Claims
+    description: Sahiplik talepleri
+  - name: Users
+    description: Kullanıcı profili
+  - name: Categories
+    description: Eşya kategorileri
+
+paths:
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Yeni kullanıcı kaydı
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Kullanıcı oluşturuldu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                id: 1
+                fullName: Ayşe Yılmaz
+                email: ayse@universite.edu.tr
+                role: STUDENT
+                createdAt: '2026-11-05T10:00:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Giriş yap ve token al
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Giriş başarılı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+              example:
+                accessToken: eyJhbGciOiJIUzI1NiJ9.example.signature
+                tokenType: Bearer
+                expiresIn: 3600
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Oturumdaki kullanıcının profili
+      operationId: getCurrentUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Kullanıcı profili
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /categories:
+    get:
+      tags: [Categories]
+      summary: Eşya kategorilerini listele
+      operationId: listCategories
+      responses:
+        '200':
+          description: Kategori listesi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+
+  /items:
+    get:
+      tags: [Items]
+      summary: İlanları listele ve filtrele
+      operationId: listItems
+      parameters:
+        - name: type
+          in: query
+          schema:
+            $ref: '#/components/schemas/ItemType'
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/ItemStatus'
+        - name: categoryId
+          in: query
+          schema:
+            type: integer
+        - name: q
+          in: query
+          description: Başlık ve açıklamada arama
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Sayfalanmış ilan listesi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemPage'
+              example:
+                items:
+                  - id: 42
+                    type: FOUND
+                    title: Mavi cüzdan
+                    categoryId: 3
+                    location: Merkez Kütüphane
+                    eventDate: '2026-11-04'
+                    status: OPEN
+                    ownerId: 7
+                    createdAt: '2026-11-04T14:30:00Z'
+                page: 1
+                pageSize: 20
+                total: 1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      tags: [Items]
+      summary: Yeni kayıp veya bulunan eşya ilanı oluştur
+      operationId: createItem
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemCreate'
+            example:
+              type: FOUND
+              title: Mavi cüzdan
+              description: Kütüphane girişinde bulundu.
+              categoryId: 3
+              location: Merkez Kütüphane
+              eventDate: '2026-11-04'
+      responses:
+        '201':
+          description: İlan oluşturuldu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+              example:
+                id: 42
+                type: FOUND
+                title: Mavi cüzdan
+                description: Kütüphane girişinde bulundu.
+                categoryId: 3
+                location: Merkez Kütüphane
+                eventDate: '2026-11-04'
+                status: OPEN
+                ownerId: 7
+                createdAt: '2026-11-04T14:30:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /items/{itemId}:
+    parameters:
+      - $ref: '#/components/parameters/ItemId'
+    get:
+      tags: [Items]
+      summary: İlan detayı
+      operationId: getItem
+      responses:
+        '200':
+          description: İlan detayı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Items]
+      summary: İlanı güncelle (yalnızca ilan sahibi)
+      operationId: updateItem
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemUpdate'
+      responses:
+        '200':
+          description: İlan güncellendi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Items]
+      summary: İlanı sil (ilan sahibi veya moderatör)
+      operationId: deleteItem
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: İlan silindi
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /items/{itemId}/claims:
+    parameters:
+      - $ref: '#/components/parameters/ItemId'
+    get:
+      tags: [Claims]
+      summary: Bir ilana yapılan talepleri listele (ilan sahibi veya moderatör)
+      operationId: listItemClaims
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Talep listesi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Claim'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags: [Claims]
+      summary: İlan için sahiplik talebi oluştur
+      operationId: createClaim
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClaimCreate'
+            example:
+              message: Cüzdanın içinde öğrenci kartım var.
+              proof: Kartın üzerindeki öğrenci numarası 2021xxxx.
+      responses:
+        '201':
+          description: Talep oluşturuldu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Claim'
+              example:
+                id: 15
+                itemId: 42
+                claimantId: 9
+                message: Cüzdanın içinde öğrenci kartım var.
+                status: PENDING
+                createdAt: '2026-11-05T09:15:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /claims/{claimId}/decision:
+    parameters:
+      - name: claimId
+        in: path
+        required: true
+        schema:
+          type: integer
+    post:
+      tags: [Claims]
+      summary: Talebi onayla veya reddet
+      operationId: decideClaim
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClaimDecision'
+      responses:
+        '200':
+          description: Karar kaydedildi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Claim'
+              example:
+                id: 15
+                itemId: 42
+                claimantId: 9
+                status: APPROVED
+                decisionNote: Kart bilgisi eşleşti.
+                createdAt: '2026-11-05T09:15:00Z'
+                decidedAt: '2026-11-05T11:00:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /users/me/items:
+    get:
+      tags: [Users]
+      summary: Kendi ilanlarım
+      operationId: listMyItems
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Kullanıcının ilanları
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /users/me/claims:
+    get:
+      tags: [Users]
+      summary: Kendi taleplerim
+      operationId: listMyClaims
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Kullanıcının talepleri
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Claim'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    ItemId:
+      name: itemId
+      in: path
+      required: true
+      schema:
+        type: integer
+
+  schemas:
+    UserRole:
+      type: string
+      enum: [STUDENT, STAFF, MODERATOR]
+
+    ItemType:
+      type: string
+      description: LOST kaybedilen, FOUND bulunan eşya
+      enum: [LOST, FOUND]
+
+    ItemStatus:
+      type: string
+      description: İlanın yaşam döngüsü durumu
+      enum: [OPEN, CLAIM_PENDING, RETURNED, CLOSED]
+
+    ClaimStatus:
+      type: string
+      enum: [PENDING, APPROVED, REJECTED]
+
+    RegisterRequest:
+      type: object
+      required: [fullName, email, password]
+      properties:
+        fullName:
+          type: string
+          example: Ayşe Yılmaz
+        email:
+          type: string
+          format: email
+          example: ayse@universite.edu.tr
+        password:
+          type: string
+          format: password
+          minLength: 8
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    TokenResponse:
+      type: object
+      required: [accessToken, tokenType, expiresIn]
+      properties:
+        accessToken:
+          type: string
+        tokenType:
+          type: string
+          example: Bearer
+        expiresIn:
+          type: integer
+          description: Saniye cinsinden geçerlilik süresi
+          example: 3600
+
+    User:
+      type: object
+      required: [id, fullName, email, role]
+      properties:
+        id:
+          type: integer
+          example: 1
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          $ref: '#/components/schemas/UserRole'
+        createdAt:
+          type: string
+          format: date-time
+
+    Category:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: integer
+          example: 3
+        name:
+          type: string
+          example: Cüzdan ve kartlar
+
+    ItemCreate:
+      type: object
+      required: [type, title, categoryId, location, eventDate]
+      properties:
+        type:
+          $ref: '#/components/schemas/ItemType'
+        title:
+          type: string
+          maxLength: 120
+        description:
+          type: string
+          maxLength: 1000
+        categoryId:
+          type: integer
+        location:
+          type: string
+          description: Eşyanın kaybedildiği veya bulunduğu yer
+        eventDate:
+          type: string
+          format: date
+        photoUrl:
+          type: string
+          format: uri
+
+    ItemUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 120
+        description:
+          type: string
+          maxLength: 1000
+        categoryId:
+          type: integer
+        location:
+          type: string
+        photoUrl:
+          type: string
+          format: uri
+        status:
+          $ref: '#/components/schemas/ItemStatus'
+
+    Item:
+      allOf:
+        - $ref: '#/components/schemas/ItemCreate'
+        - type: object
+          required: [id, status, ownerId, createdAt]
+          properties:
+            id:
+              type: integer
+              example: 42
+            status:
+              $ref: '#/components/schemas/ItemStatus'
+            ownerId:
+              type: integer
+              description: İlanı oluşturan kullanıcı
+            createdAt:
+              type: string
+              format: date-time
+
+    ItemPage:
+      type: object
+      required: [items, page, pageSize, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        total:
+          type: integer
+
+    ClaimCreate:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          maxLength: 500
+        proof:
+          type: string
+          description: Sahipliği doğrulayan ayırt edici bilgi
+          maxLength: 500
+
+    Claim:
+      type: object
+      required: [id, itemId, claimantId, status, createdAt]
+      properties:
+        id:
+          type: integer
+        itemId:
+          type: integer
+        claimantId:
+          type: integer
+        message:
+          type: string
+        proof:
+          type: string
+        status:
+          $ref: '#/components/schemas/ClaimStatus'
+        decisionNote:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        decidedAt:
+          type: string
+          format: date-time
+
+    ClaimDecision:
+      type: object
+      required: [decision]
+      properties:
+        decision:
+          type: string
+          enum: [APPROVED, REJECTED]
+        note:
+          type: string
+          maxLength: 500
+
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          example: İstek geçersiz.
+        details:
+          type: array
+          items:
+            type: string
+
+  responses:
+    BadRequest:
+      description: Geçersiz istek
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: VALIDATION_ERROR
+            message: İstek geçersiz.
+            details: ['title zorunludur']
+    Unauthorized:
+      description: Kimlik doğrulaması gerekli veya geçersiz
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: UNAUTHORIZED
+            message: Giriş yapmalısınız.
+    Forbidden:
+      description: Bu işlem için yetkiniz yok
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: FORBIDDEN
+            message: Bu işlemi yapma yetkiniz yok.
+    NotFound:
+      description: Kaynak bulunamadı
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: NOT_FOUND
+            message: Kayıt bulunamadı.
+    Conflict:
+      description: Kaynak durumu işlemle çakışıyor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: CONFLICT
+            message: Bu işlem mevcut durumla çakışıyor.
