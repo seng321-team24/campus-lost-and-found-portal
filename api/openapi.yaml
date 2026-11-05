@@ -736,8 +736,12 @@ components:
         status:
           $ref: '#/components/schemas/ItemStatus'
 
+    
     Item:
       allOf:
+        - $ref: '#/components/schemas/ItemCreate'
+        - type: object
+          required: [id, status, ownerId, createdAt]
           properties:
             id:
               type: integer
@@ -889,6 +893,7 @@ components:
       description: The file format is not supported
       content:
         application/json:
+    
           schema:
             $ref: '#/components/schemas/Error'
           example:
