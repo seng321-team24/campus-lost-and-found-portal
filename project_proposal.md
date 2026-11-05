@@ -8,14 +8,16 @@
 
 ## 1. Problem Statement and Empirical Evidence
 
-Losing personal items within a university campus causes significant distress and wasted time for students and university staff. Currently, campus lost-and-found efforts rely on informal social media groups, physical bulletin boards, or inquiries at individual department desks. This fragmented process leads to low recovery rates and uncoordinated administrative overhead.
+Losing personal items within a university campus causes significant distress and wasted time for students and university staff. Currently, campus lost-and-found efforts rely on informal communication chanels, physical security offices, or inquiries at individual department desks. This fragmented process leads to low recovery rates and uncoordinated administrative overhead. *60%** of surveyed respondents stating that finding information about lost items at the university is difficult or very difficult.
+ 
+To validate this problem, our team conducted a target user survey across campus (15 respondents). The quantitative survey evidence revealed the following metrics:
+* **86.7%** of surveyed students and staff reported having lost or found an item on campus during their academic period.
+* **66.7%** of respondents currently rely on contacting university security or staff, while **20%** ask classmates or friends, indicating a lack of a centralized and efficient tracking mechanism.
+* **66.7%** of participants expressed a strong willingness (**40%** definitely yes, **26.7%** probably yes) to use a centralized, dedicated campus web portal for reporting and searching for lost items.
+* **50%** of participants highlighted that having all core features combined (reporting lost/found items, searching, and tracking claims) would be the most useful capability in a Lost & Found system.
+ 
+A centralized portal addresses this challenge by streamlining communication, eliminating fragmented inquiries, and facilitating structured search and ownership verification.
 
-To validate this problem, our team conducted a target user survey across campus. The quantitative survey evidence revealed the following metrics:
-* **84% of surveyed students and staff** reported losing or finding an item on campus at least once during their academic period.
-* **67% of respondents** stated that existing communication channels (social media groups, messaging chats) were disorganized and ineffective for locating lost property.
-* **78% of participants** expressed a strong willingness to use a centralized, dedicated campus web portal for reporting and searching for lost and found items.
-
-A centralized portal addresses this challenge by streamlining communication, enabling search capability by category and location, and facilitating ownership verification.
 
 ---
 
