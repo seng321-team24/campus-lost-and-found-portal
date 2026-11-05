@@ -1,6 +1,6 @@
 # CAMPUS LOST AND FOUND PORTAL
 ## Initial Product Backlog
-**Sprint 1 Deliverable | K1-Product Owner**
+**Sprint 1 Deliverable | 
 
 ---
 
@@ -10,17 +10,16 @@
 | :--- | :--- |
 | **Project name** | Campus Lost and Found Portal |
 | **Team** | Team 24 |
-| **Product Owner / K1** | İrem Köse |
 
 ### Team Role Assignment
 
 | Role | Team member | Main responsibility |
 | :--- | :--- | :--- |
-| **K1-Product Owner** | İrem Köse | Product backlog, requirements prioritization, and stakeholder value |
-| **K2-Scrum Master** | Tuğba Kezban Çay | Agile process coordination and team facilitation |
-| **K3-Software Architect** | Aslıhan Kaçmaz | System architecture and OpenAPI draft |
-| **K4-QA Engineer** | Ceren Torun | Quality assurance, validation, and testing support |
-| **K5-DevOps Engineer** | Berra Bayındır | GitHub workflow and development infrastructure |
+| **Product Owner** | İrem Köse | Product backlog, requirements prioritization, and stakeholder value |
+| **Scrum Master** | Tuğba Kezban Çay | Agile process coordination and team facilitation |
+| **Software Architect** | Aslıhan Kaçmaz | System architecture and OpenAPI draft |
+| **QA Engineer** | Ceren Torun | Quality assurance, validation, and testing support |
+| **DevOps Engineer** | Berra Bayındır | GitHub workflow and development infrastructure |
 
 ---
 
@@ -108,7 +107,7 @@ User stories are written from the perspective of a person who will use the syste
 ---
 
 ## 8. Backlog Ownership and Maintenance
-The Product Owner, **İrem Köse (K1)**, is responsible for maintaining the product backlog, clarifying requirements, and ordering backlog items according to their value and priority. Implementation assignees for individual stories will be confirmed by the development team during sprint planning. The backlog may be updated based on stakeholder feedback, team discussions, and project progress.
+The Product Owner, is responsible for maintaining the product backlog, clarifying requirements, and ordering backlog items according to their value and priority. Implementation assignees for individual stories will be confirmed by the development team during sprint planning. The backlog may be updated based on stakeholder feedback, team discussions, and project progress.
 
 ---
 
