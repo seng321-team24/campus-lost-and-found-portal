@@ -1,7 +1,7 @@
 # System Context Diagram and External Interactions
 
 **Project:** Campus Lost and Found Portal | **Team:** Team 24
-**Sprint 1 Deliverable | K3 - Software Architect (Aslıhan Kaçmaz)**
+**Sprint 1 Deliverable | Software Architect (Aslıhan Kaçmaz)**
 
 This document supports the System Vision and Boundary deliverable. It is aligned with the Project Proposal (`project_proposal.md`, sections 3 and 6), the Initial Product Backlog (`initial_product_backlog.md`) and the OpenAPI draft (`api/openapi.yaml`).
 
