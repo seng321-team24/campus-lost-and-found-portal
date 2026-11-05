@@ -21,7 +21,7 @@ Record each member’s completed work and reviews with links to the relevant Git
 | Member | Completed work | Issue | Pull request | Commit | Review evidence |
 |---|---|---|---|---|---|
 | İrem Köse | Pending confirmation | TBD | TBD | TBD | TBD |
-| Tuğba Kezban Çay | Opened the Sprint 1 team roles and RACI issue. | [#2](https://github.com/seng321-team24/campus-lost-and-found-portal/issues/2) | TBD | TBD | TBD |
+| Tuğba Kezban Çay | Prepared the Sprint 1 team roles, RACI matrix and contribution tracking template. Opened PR #4 for review. | [Issue #2](https://github.com/seng321-team24/campus-lost-and-found-portal/issues/2) | [PR #4](https://github.com/seng321-team24/campus-lost-and-found-portal/pull/4) | [PR commits](https://github.com/seng321-team24/campus-lost-and-found-portal/pull/4/commits) | Pending |
 | Aslıhan Kaçmaz | Pending confirmation | TBD | TBD | TBD | TBD |
 | Ceren Torun | Pending confirmation | TBD | TBD | TBD | TBD |
 | Berra Bayındır | Pending confirmation | TBD | TBD | TBD | TBD |
