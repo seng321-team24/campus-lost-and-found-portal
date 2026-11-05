@@ -128,6 +128,5 @@ A backlog item can be considered complete when:
 * The team should confirm whether registration will use ordinary account credentials or university accounts.
 * The team should agree on the allowed item categories, required listing fields, image formats, and maximum image size.
 * The listed priorities, story points, and dependencies are initial proposals and should be validated during backlog refinement.
-
-> **Submission note:** This document covers the K1 Product Owner's initial product backlog contribution for Sprint 1.  
+ 
 > *Campus Lost and Found Portal | Team 24*
