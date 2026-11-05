@@ -1,0 +1,901 @@
+openapi: 3.0.3
+info:
+  title: Campus Lost and Found Portal API
+  description: |
+    Initial API contract (Sprint 1 draft) for the Campus Lost and Found Portal,
+    a centralized web platform where university students and staff publish,
+    browse and search lost and found item listings and submit ownership claims.
+
+    Team 24. Prepared by K3 (Software Architect).
+
+    Traceability: every operation lists the Initial Product Backlog user
+    stories it supports (US-01 to US-10) or the Project Proposal scope item
+    (section 6.1) it supports. Claim operations and moderation come from the
+    Project Proposal; the backlog does not yet contain user stories for them.
+
+    Privacy: listings never expose contact details. The proof text of a claim
+    is visible only to the claimant, the listing owner and moderators.
+
+    Open decisions that may change this draft: login method (ordinary
+    credentials are assumed), allowed item categories, accepted image formats
+    and maximum image size.
+  version: 0.1.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development
+tags:
+  - name: Auth
+    description: Registration and login (User Management epic)
+  - name: Users
+    description: Profile, own listings and own claims
+  - name: Items
+    description: Lost and found listings
+  - name: Categories
+    description: Item categories used for classification and filtering
+  - name: Claims
+    description: Ownership claim requests and their review
+
+paths:
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user
+      description: 'Backlog: US-01. The system validates the data before creating the account.'
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            example:
+              fullName: Ayse Yilmaz
+              email: ayse@university.edu.tr
+              password: S3cure-pass
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                id: 1
+                fullName: Ayse Yilmaz
+                email: ayse@university.edu.tr
+                role: STUDENT
+                createdAt: '2026-11-05T10:00:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Log in and obtain an access token
+      description: 'Backlog: US-02. Invalid credentials return 401 with an error message.'
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              email: ayse@university.edu.tr
+              password: S3cure-pass
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+              example:
+                accessToken: eyJhbGciOiJIUzI1NiJ9.example.signature
+                tokenType: Bearer
+                expiresIn: 3600
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /users/me:
+    get:
+      tags: [Users]
+      summary: View my profile
+      description: 'Proposal 6.1: user profile viewing.'
+      operationId: getCurrentUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Profile of the logged-in user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                id: 1
+                fullName: Ayse Yilmaz
+                email: ayse@university.edu.tr
+                role: STUDENT
+                createdAt: '2026-11-05T10:00:00Z'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /users/me/items:
+    get:
+      tags: [Users]
+      summary: List my own listings
+      description: 'Backlog: US-10.'
+      operationId: listMyItems
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Listings created by the logged-in user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+              example:
+                - id: 42
+                  type: FOUND
+                  title: Blue wallet
+                  description: Found at the library entrance.
+                  categoryId: 2
+                  location: Main Library
+                  eventDate: '2026-11-04'
+                  status: OPEN
+                  ownerId: 7
+                  createdAt: '2026-11-04T14:30:00Z'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /users/me/claims:
+    get:
+      tags: [Users]
+      summary: List the claims I have submitted
+      description: 'Proposal 6.1: basic listing and claim management.'
+      operationId: listMyClaims
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Claims submitted by the logged-in user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Claim'
+              example:
+                - id: 15
+                  itemId: 42
+                  claimantId: 9
+                  message: This is my wallet.
+                  status: PENDING
+                  createdAt: '2026-11-05T09:15:00Z'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /categories:
+    get:
+      tags: [Categories]
+      summary: List item categories
+      description: 'Backlog: US-03, US-04, US-07. The final category list is to be agreed by the team.'
+      operationId: listCategories
+      responses:
+        '200':
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+              example:
+                - id: 1
+                  name: Electronics
+                - id: 2
+                  name: Wallets and cards
+                - id: 3
+                  name: Keys
+
+  /items:
+    get:
+      tags: [Items]
+      summary: List, search and filter listings
+      description: >
+        Backlog: US-05 (view all listings), US-06 (keyword search), US-07
+        (category filter). Proposal 6.1: search by name, filter by category
+        and status.
+      operationId: listItems
+      parameters:
+        - name: type
+          in: query
+          description: Show only lost or only found listings
+          schema:
+            $ref: '#/components/schemas/ItemType'
+        - name: categoryId
+          in: query
+          description: Filter by category (US-07)
+          schema:
+            type: integer
+        - name: status
+          in: query
+          description: Filter by listing status
+          schema:
+            $ref: '#/components/schemas/ItemStatus'
+        - name: q
+          in: query
+          description: Keyword search in title and description (US-06)
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Paginated list of listings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemPage'
+              example:
+                items:
+                  - id: 42
+                    type: FOUND
+                    title: Blue wallet
+                    description: Found at the library entrance.
+                    categoryId: 2
+                    location: Main Library
+                    eventDate: '2026-11-04'
+                    status: OPEN
+                    ownerId: 7
+                    createdAt: '2026-11-04T14:30:00Z'
+                page: 1
+                pageSize: 20
+                total: 1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      tags: [Items]
+      summary: Create a lost or found listing
+      description: 'Backlog: US-03 (lost item), US-04 (found item). Requires login (US-02).'
+      operationId: createItem
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemCreate'
+            example:
+              type: FOUND
+              title: Blue wallet
+              description: Found at the library entrance.
+              categoryId: 2
+              location: Main Library
+              eventDate: '2026-11-04'
+      responses:
+        '201':
+          description: Listing created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+              example:
+                id: 42
+                type: FOUND
+                title: Blue wallet
+                description: Found at the library entrance.
+                categoryId: 2
+                location: Main Library
+                eventDate: '2026-11-04'
+                status: OPEN
+                ownerId: 7
+                createdAt: '2026-11-04T14:30:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /items/{itemId}:
+    parameters:
+      - $ref: '#/components/parameters/ItemId'
+    get:
+      tags: [Items]
+      summary: Get listing details
+      description: 'Backlog: US-08.'
+      operationId: getItem
+      responses:
+        '200':
+          description: Listing details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+              example:
+                id: 42
+                type: FOUND
+                title: Blue wallet
+                description: Found at the library entrance.
+                categoryId: 2
+                location: Main Library
+                eventDate: '2026-11-04'
+                photoUrl: https://example.com/photos/42.jpg
+                status: OPEN
+                ownerId: 7
+                createdAt: '2026-11-04T14:30:00Z'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Items]
+      summary: Update a listing (listing owner only)
+      description: 'Backlog: "Create and manage" listing features. Proposal 6.1: basic listing management.'
+      operationId: updateItem
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemUpdate'
+            example:
+              description: Found at the library entrance, left side.
+      responses:
+        '200':
+          description: Listing updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+              example:
+                id: 42
+                type: FOUND
+                title: Blue wallet
+                description: Found at the library entrance, left side.
+                categoryId: 2
+                location: Main Library
+                eventDate: '2026-11-04'
+                status: OPEN
+                ownerId: 7
+                createdAt: '2026-11-04T14:30:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Items]
+      summary: Delete a listing (listing owner or moderator)
+      description: >
+        Backlog: "Create and manage" listing features. Proposal 6.1 and
+        section 3: moderators remove inappropriate or misleading listings.
+      operationId: deleteItem
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Listing deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /items/{itemId}/photo:
+    parameters:
+      - $ref: '#/components/parameters/ItemId'
+    post:
+      tags: [Items]
+      summary: Upload a photo for a listing (listing owner only)
+      description: >
+        Backlog: US-09. Accepted formats and the maximum file size are to be
+        agreed by the team; JPEG and PNG are assumed in this draft.
+      operationId: uploadItemPhoto
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Photo uploaded, updated listing returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+              example:
+                id: 42
+                type: FOUND
+                title: Blue wallet
+                description: Found at the library entrance.
+                categoryId: 2
+                location: Main Library
+                photoUrl: https://example.com/photos/42.jpg
+                status: OPEN
+                ownerId: 7
+                createdAt: '2026-11-04T14:30:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+
+  /items/{itemId}/claims:
+    parameters:
+      - $ref: '#/components/parameters/ItemId'
+    get:
+      tags: [Claims]
+      summary: List the claims made on a listing (listing owner or moderator)
+      description: 'Proposal 6.1: reviewing claim requests.'
+      operationId: listItemClaims
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Claims for the listing
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Claim'
+              example:
+                - id: 15
+                  itemId: 42
+                  claimantId: 9
+                  message: This is my wallet.
+                  proof: It contains my student card.
+                  status: PENDING
+                  createdAt: '2026-11-05T09:15:00Z'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags: [Claims]
+      summary: Submit an ownership claim for a listing
+      description: >
+        Proposal 6.1: submitting ownership claim requests. A user cannot claim
+        their own listing or a listing that is not open.
+      operationId: createClaim
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClaimCreate'
+            example:
+              message: This is my wallet.
+              proof: It contains my student card.
+      responses:
+        '201':
+          description: Claim submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Claim'
+              example:
+                id: 15
+                itemId: 42
+                claimantId: 9
+                message: This is my wallet.
+                proof: It contains my student card.
+                status: PENDING
+                createdAt: '2026-11-05T09:15:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /claims/{claimId}/decision:
+    parameters:
+      - name: claimId
+        in: path
+        required: true
+        schema:
+          type: integer
+    post:
+      tags: [Claims]
+      summary: Accept or reject a claim (listing owner or moderator)
+      description: >
+        Proposal 6.1: reviewing claim requests. Accepting a claim sets the
+        listing status to CLAIMED. Physical handover happens outside the
+        platform. The system does not verify ownership automatically.
+      operationId: decideClaim
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClaimDecision'
+            example:
+              decision: APPROVED
+              note: The proof matches the item.
+      responses:
+        '200':
+          description: Decision recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Claim'
+              example:
+                id: 15
+                itemId: 42
+                claimantId: 9
+                message: This is my wallet.
+                proof: It contains my student card.
+                status: APPROVED
+                decisionNote: The proof matches the item.
+                createdAt: '2026-11-05T09:15:00Z'
+                decidedAt: '2026-11-05T11:00:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    ItemId:
+      name: itemId
+      in: path
+      required: true
+      schema:
+        type: integer
+
+  schemas:
+    UserRole:
+      type: string
+      enum: [STUDENT, STAFF, MODERATOR]
+
+    ItemType:
+      type: string
+      description: LOST for a lost item, FOUND for a found item
+      enum: [LOST, FOUND]
+
+    ItemStatus:
+      type: string
+      description: >
+        OPEN while the listing is active, CLAIM_PENDING while a claim awaits
+        review, CLAIMED after a claim is accepted, CLOSED when the listing is
+        closed.
+      enum: [OPEN, CLAIM_PENDING, CLAIMED, CLOSED]
+
+    ClaimStatus:
+      type: string
+      enum: [PENDING, APPROVED, REJECTED]
+
+    RegisterRequest:
+      type: object
+      required: [fullName, email, password]
+      properties:
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    TokenResponse:
+      type: object
+      required: [accessToken, tokenType, expiresIn]
+      properties:
+        accessToken:
+          type: string
+        tokenType:
+          type: string
+        expiresIn:
+          type: integer
+          description: Token lifetime in seconds
+
+    User:
+      type: object
+      required: [id, fullName, email, role]
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          $ref: '#/components/schemas/UserRole'
+        createdAt:
+          type: string
+          format: date-time
+
+    Category:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    ItemCreate:
+      type: object
+      description: >
+        Required fields follow backlog US-03 and US-04 (name, description,
+        category, location). The date is optional (Proposal 3).
+      required: [type, title, description, categoryId, location]
+      properties:
+        type:
+          $ref: '#/components/schemas/ItemType'
+        title:
+          type: string
+          description: Item name
+          maxLength: 120
+        description:
+          type: string
+          maxLength: 1000
+        categoryId:
+          type: integer
+        location:
+          type: string
+          description: Approximate place where the item was lost or found
+        eventDate:
+          type: string
+          format: date
+          description: Approximate date the item was lost or found
+
+    ItemUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 120
+        description:
+          type: string
+          maxLength: 1000
+        categoryId:
+          type: integer
+        location:
+          type: string
+        eventDate:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/ItemStatus'
+
+    
+    Item:
+      allOf:
+        - $ref: '#/components/schemas/ItemCreate'
+        - type: object
+          required: [id, status, ownerId, createdAt]
+          properties:
+            id:
+              type: integer
+            photoUrl:
+              type: string
+              format: uri
+            status:
+              $ref: '#/components/schemas/ItemStatus'
+            ownerId:
+              type: integer
+              description: User who created the listing
+            createdAt:
+              type: string
+              format: date-time
+
+    ItemPage:
+      type: object
+      required: [items, page, pageSize, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        total:
+          type: integer
+
+    ClaimCreate:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          maxLength: 500
+        proof:
+          type: string
+          description: Distinguishing detail supporting the ownership claim
+          maxLength: 500
+
+    Claim:
+      type: object
+      required: [id, itemId, claimantId, status, createdAt]
+      properties:
+        id:
+          type: integer
+        itemId:
+          type: integer
+        claimantId:
+          type: integer
+        message:
+          type: string
+        proof:
+          type: string
+        status:
+          $ref: '#/components/schemas/ClaimStatus'
+        decisionNote:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        decidedAt:
+          type: string
+          format: date-time
+
+    ClaimDecision:
+      type: object
+      required: [decision]
+      properties:
+        decision:
+          type: string
+          enum: [APPROVED, REJECTED]
+        note:
+          type: string
+          maxLength: 500
+
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: string
+
+  responses:
+    BadRequest:
+      description: Invalid request or failed validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: VALIDATION_ERROR
+            message: The request is invalid.
+            details: ['title is required']
+    Unauthorized:
+      description: Authentication required or credentials invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: UNAUTHORIZED
+            message: Invalid credentials or missing token.
+    Forbidden:
+      description: The user is not allowed to perform this action
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: FORBIDDEN
+            message: Only the listing owner or a moderator can do this.
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: NOT_FOUND
+            message: Listing not found.
+    Conflict:
+      description: The request conflicts with existing data or the current state
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: CONFLICT
+            message: This action is not allowed in the current state.
+    PayloadTooLarge:
+      description: The file exceeds the allowed size
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: PAYLOAD_TOO_LARGE
+            message: The file is larger than the allowed size.
+    UnsupportedMediaType:
+      description: The file format is not supported
+      content:
+        application/json:
+    
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: UNSUPPORTED_MEDIA_TYPE
+            message: Only JPEG and PNG images are accepted.
