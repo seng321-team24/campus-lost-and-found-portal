@@ -1,84 +1,195 @@
 # Project Proposal — Campus Lost and Found Portal
-
+ 
 **Project:** Campus Lost and Found Portal  
 **Team:** Team 24  
-**Status:** Team Proposal Document  
-
+**Course:** SENG 321 — Software Engineering  
+**Status:** Sprint 1 Project Proposal
+ 
 ---
-
+ 
 ## 1. Problem Statement and Empirical Evidence
-
-Losing personal items within a university campus causes significant distress and wasted time for students and university staff. Currently, campus lost-and-found efforts rely on informal communication chanels, physical security offices, or inquiries at individual department desks. This fragmented process leads to low recovery rates and uncoordinated administrative overhead. *60%** of surveyed respondents stating that finding information about lost items at the university is difficult or very difficult.
  
-To validate this problem, our team conducted a target user survey across campus (15 respondents). The quantitative survey evidence revealed the following metrics:
-* **86.7%** of surveyed students and staff reported having lost or found an item on campus during their academic period.
-* **66.7%** of respondents currently rely on contacting university security or staff, while **20%** ask classmates or friends, indicating a lack of a centralized and efficient tracking mechanism.
-* **66.7%** of participants expressed a strong willingness (**40%** definitely yes, **26.7%** probably yes) to use a centralized, dedicated campus web portal for reporting and searching for lost items.
-* **50%** of participants highlighted that having all core features combined (reporting lost/found items, searching, and tracking claims) would be the most useful capability in a Lost & Found system.
+Losing personal belongings on a university campus can cause stress, inconvenience, and wasted time for students and university staff. Currently, lost-and-found processes often rely on informal communication channels, university security offices, or individual department staff. These methods may make it difficult to find information about missing items efficiently.
  
-A centralized portal addresses this challenge by streamlining communication, eliminating fragmented inquiries, and facilitating structured search and ownership verification.
-
-
+To investigate this problem, our team conducted a campus survey with 15 respondents. The survey revealed the following findings:
+ 
+- **53.3%** of respondents reported having lost or found an item on campus.
+- **46.7%** stated that finding information about lost items at the university is difficult or very difficult.
+- **66.7%** reported that they would normally contact university security or staff, while **20%** would ask classmates or friends.
+- **66.7%** expressed willingness to use a dedicated university lost-and-found website, consisting of **40%** who answered "Definitely yes" and **26.7%** who answered "Probably yes".
+ 
+These findings suggest that a centralized lost-and-found portal could improve access to information and provide an alternative to existing informal reporting methods.
+ 
+The survey provides preliminary feedback from a small group of 15 respondents and does not necessarily represent the entire university population.
+ 
 ---
-
+ 
 ## 2. Key Stakeholders
-
-The primary stakeholders for the Campus Lost and Found Portal are:
-
-* **Students:** Primary users who report missing belongings, publish found items, search listings, and initiate ownership claim requests.
-* **University Staff:** Administrative or facilities staff members who frequently handle found items in campus buildings and require a structured system to publish listings and track item status.
-* **Moderators / Administrators:** Designated team members or university representatives responsible for supervising listings, reviewing reported claims, and ensuring compliance with safety and privacy policies.
-* **University Community / Administration:** Beneficiaries of an organized campus environment, reduced physical clutter of unclaimed items, and improved student satisfaction.
-
+ 
+The primary stakeholders of the Campus Lost and Found Portal are:
+ 
+- **Students:** Primary users who report lost belongings, publish found items, search listings, and submit ownership claim requests.
+- **University Staff:** Staff members who may find lost items or assist students with lost-and-found inquiries.
+- **Moderators / Administrators:** Authorized users responsible for reviewing listings, managing reports, and supervising claim requests where applicable.
+- **University Administration:** Stakeholders who may benefit from improved organization, reduced administrative workload, and better student services.
+ 
 ---
-
-## 3. Expected Outcomes and Deliverables
-
-The Campus Lost and Found Portal project aims to deliver:
-* **Centralized Web Platform:** A user-friendly web interface for publishing, searching, and filtering lost and found item listings.
-* **Claim and Approval Workflow:** A structured mechanism allowing lost item owners to submit claim requests and item finders/moderators to accept or decline claims.
-* **API Documentation & System Specs:** A fully documented RESTful API draft (OpenAPI specification) describing system endpoints and request schemas.
-* **Verifiable Development Process:** Transparent, branch-based GitHub workflow adhering to GitHub-Flow standards, issue tracking, and code/documentation reviews.
-
+ 
+## 3. Proposed Solution
+ 
+The proposed solution is a centralized web-based Lost and Found Portal designed for university students and staff.
+ 
+The platform will allow users to report lost or found items and search existing listings.
+ 
+The main proposed functionalities include:
+ 
+1. **User Registration and Login:** Users can create accounts and securely access the platform.
+2. **Lost and Found Item Reporting:** Users can create listings containing an item name, description, category, approximate location, and date.
+3. **Search and Filtering:** Users can search listings by item name, category, and lost/found status.
+4. **Item Details:** Users can view available information about reported items.
+5. **Claim Requests:** Users can submit requests to claim items they believe belong to them.
+6. **Claim Management:** Authorized users can review and accept or reject claim requests.
+7. **Basic Administration:** Authorized administrators can manage inappropriate or misleading listings.
+ 
+The exact implementation scope of these functionalities will be determined through the product backlog and development priorities.
+ 
 ---
-
-## 4. Assumptions
-
+ 
+## 4. Expected Outcomes and Deliverables
+ 
+The Campus Lost and Found Portal aims to deliver the following outcomes:
+ 
+- **Centralized Web Platform:** A user-friendly interface for reporting, searching, and filtering lost and found items.
+- **Improved Information Accessibility:** A structured system that reduces dependence on scattered communication channels.
+- **Claim and Approval Workflow:** A proposed mechanism for submitting and reviewing ownership claims.
+- **API Documentation:** An OpenAPI specification describing RESTful endpoints, request and response schemas, and error responses.
+- **Software Engineering Documentation:** Project proposal, system vision, project backlog, team responsibilities, and RACI matrix.
+- **Verifiable Development Process:** A Git-Flow-based GitHub workflow with feature branches, issues, pull requests, and code reviews.
+ 
+The expected result is a working software prototype developed incrementally throughout the course sprints.
+ 
+---
+ 
+## 5. Feasibility Assessment
+ 
+The project is considered feasible within the course framework, provided that development is organized into manageable tasks and completed incrementally.
+ 
+### 5.1 Technical Feasibility
+ 
+The system can be developed using commonly available web development technologies and a database for storing user accounts, item listings, and claim information.
+ 
+The team can use GitHub for version control, task tracking, and collaboration.
+ 
+The project does not initially require integration with university information systems.
+ 
+### 5.2 Operational Feasibility
+ 
+The proposed platform is intended to be accessible through a web browser.
+ 
+Students and university staff can use the system to publish and search for lost-and-found reports.
+ 
+The interface should be simple and understandable for users with basic computer skills.
+ 
+### 5.3 Schedule Feasibility
+ 
+The project will be developed across four sprints.
+ 
+To reduce scheduling risks, the team will prioritize essential functionalities before implementing more complex features.
+ 
+Tasks will be distributed among team members according to their responsibilities.
+ 
+### 5.4 Resource Feasibility
+ 
+The development process can use commonly available development tools, GitHub, and suitable open-source technologies.
+ 
+The project is intended as an educational prototype and is not expected to require significant infrastructure investment during its initial development.
+ 
+---
+ 
+## 6. Initial Project Scope
+ 
+### 6.1 In-Scope Features
+ 
+The planned system scope includes:
+ 
+- User registration and login
+- User profile viewing
+- Creating lost-item reports
+- Creating found-item reports
+- Adding item descriptions, categories, locations, and dates
+- Viewing item listings and details
+- Searching for items by name
+- Filtering items by category and status
+- Submitting ownership claim requests
+- Reviewing claim requests
+- Basic listing and claim management
+ 
+The team will prioritize these features through the product backlog and implement them incrementally.
+ 
+### 6.2 Out-of-Scope Features
+ 
+The initial system will not include:
+ 
+- Direct integration with university student information systems
+- Payment processing or financial transactions
+- Automatic ownership verification using artificial intelligence
+- Integration with external police or governmental databases
+- A dedicated Android or iOS mobile application
+- Advanced real-time location tracking
+ 
+These features may be considered for future development if appropriate.
+ 
+---
+ 
+## 7. Assumptions
+ 
 1. Target users are campus students and staff who can access a web browser and the internet.
-2. Users can provide basic details about a lost or found item, such as its description, approximate location and date.
-3. The initial scope prioritizes creating and browsing lost/found reports. Any claiming, moderation or authentication workflow must be agreed in the backlog and reflected consistently in the OpenAPI draft.
-4. The team has access to GitHub and the development tools needed for the agreed implementation.
-5. The initial release does not rely on university information-system integration unless access and approval are confirmed.
-6. Test and demonstration records can use fictional items and non-sensitive sample data.
-
-These are planning assumptions, not confirmed survey findings or implemented features.
-
+2. Users can provide basic details about a lost or found item, such as its description, approximate location, and date.
+3. The initial development prioritizes creating and browsing lost-and-found reports. Claim management, moderation, and authentication requirements will be finalized through the product backlog and reflected consistently in the OpenAPI specification.
+4. The team has access to GitHub and the development tools needed for implementation.
+5. The initial release does not depend on university information-system integration.
+6. Testing and demonstrations can use fictional items and non-sensitive sample data.
+ 
+These assumptions represent initial planning decisions and may be updated during development.
+ 
 ---
-
-## 5. Initial Risks and Mitigation
-
-| Risk | Likelihood | Impact | Mitigation | Follow-up owner |
+ 
+## 8. Initial Risks and Mitigation
+ 
+| Risk | Likelihood | Impact | Mitigation | Follow-up Owner |
 |---|---|---|---|---|
-| Scope grows beyond the available sprint time | Medium | High | Prioritize a small initial backlog and review new requirements before accepting them. | İrem |
-| API and documented requirements disagree | Medium | High | Review the OpenAPI draft against the backlog and vision before implementation. | Aslıhan, with Ceren |
-| Members submit work late or without evidence | Medium | High | Agree internal checkpoints, track issues and collect contribution links before the final deadline. | Tuğba |
-| Branch or merge problems delay integration | Medium | Medium | Use separate branches and reviewed PRs; integrate regularly and retain working history. | Berra |
-| Reports expose personal information | Medium | High | Minimize collected data, avoid publishing sensitive identifiers or contact details, and use safe demonstration data. | Aslıhan, with Ceren |
-| False reports or ownership claims reduce trust | Medium | Medium | Agree a proportionate claim/verification process; do not promise automatic ownership verification. | İrem, with Aslıhan |
-
-Likelihood and impact are initial qualitative team estimates and should be reviewed during planning.
-
+| Scope grows beyond the available sprint time | Medium | High | Prioritize essential requirements and review additional feature requests before accepting them. | İrem |
+| API documentation and system requirements become inconsistent | Medium | High | Review the OpenAPI specification against the product backlog and system vision. | Aslıhan, Ceren |
+| Team members submit work late or without evidence | Medium | High | Establish internal checkpoints, track GitHub issues, and collect contribution evidence. | Tuğba |
+| Branch conflicts or merge problems delay integration | Medium | Medium | Use feature branches, reviewed pull requests, and a consistent Git-Flow process. | Berra |
+| Item listings expose personal information | Medium | High | Minimize personal data collection and avoid displaying sensitive information publicly. | Aslıhan, Ceren |
+| False reports or ownership claims reduce system reliability | Medium | Medium | Implement appropriate claim review procedures and avoid assuming automatic ownership verification. | İrem, Aslıhan |
+ 
+The likelihood and impact ratings are preliminary qualitative estimates and may be revised during subsequent sprints.
+ 
 ---
-
-## 6. Open-Source License Selection
-
-The project proposes the MIT License, consistent with the license file currently shown in the repository. Its permissive terms support reuse, modification and distribution while requiring preservation of the copyright and permission notice. This suits a small educational software project intended for learning and collaboration. The team should retain the LICENSE file and check the licenses of any third-party dependencies or assets. The code license does not grant permission to publish users' personal information or third-party content.
-
+ 
+## 9. Open-Source License Selection
+ 
+The team proposes using the **MIT License** for the Campus Lost and Found Portal.
+ 
+The MIT License is a permissive open-source license that allows software to be used, modified, and distributed while requiring preservation of the copyright and permission notice.
+ 
+This license is suitable for an educational software engineering project because it supports collaboration, learning, and future improvements.
+ 
+The team will retain the LICENSE file in the GitHub repository and review the licenses of any third-party dependencies or assets used during development.
+ 
+The software license does not authorize the publication of private user information or third-party copyrighted content without permission.
+ 
 ---
-
-## 7. Items to Confirm Before Integration
-
-- Confirm the initial release features with İrem and Ceren.
-- Confirm that the system assumptions agree with Aslıhan's API draft.
-- Confirm MIT as the team's agreed license.
-- Agree an internal document collection deadline before the course submission deadline.
+ 
+## 10. Conclusion
+ 
+The Campus Lost and Found Portal aims to provide a centralized and accessible solution for managing lost-and-found information within a university environment.
+ 
+The preliminary survey results indicate potential demand for a dedicated web-based reporting and search platform.
+ 
+By implementing essential features through an incremental four-sprint development process, the team aims to deliver a functional prototype supported by clear requirements, API documentation, and collaborative GitHub practices.
+ 
+The project will focus on usability, organized item reporting, efficient searching, and responsible handling of user information.
+ 
