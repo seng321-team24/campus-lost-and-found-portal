@@ -57,12 +57,12 @@ These are planning assumptions, not confirmed survey findings or implemented fea
 
 | Risk | Likelihood | Impact | Mitigation | Follow-up owner |
 |---|---|---|---|---|
-| Scope grows beyond the available sprint time | Medium | High | Prioritize a small initial backlog and review new requirements before accepting them. | K1 |
-| API and documented requirements disagree | Medium | High | Review the OpenAPI draft against the backlog and vision before implementation. | K3, with K4 |
-| Members submit work late or without evidence | Medium | High | Agree internal checkpoints, track issues and collect contribution links before the final deadline. | K2 |
-| Branch or merge problems delay integration | Medium | Medium | Use separate branches and reviewed PRs; integrate regularly and retain working history. | K5 |
-| Reports expose personal information | Medium | High | Minimize collected data, avoid publishing sensitive identifiers or contact details, and use safe demonstration data. | K3, with K4 |
-| False reports or ownership claims reduce trust | Medium | Medium | Agree a proportionate claim/verification process; do not promise automatic ownership verification. | K1, with K3 |
+| Scope grows beyond the available sprint time | Medium | High | Prioritize a small initial backlog and review new requirements before accepting them. | İrem |
+| API and documented requirements disagree | Medium | High | Review the OpenAPI draft against the backlog and vision before implementation. | Aslıhan, with Ceren |
+| Members submit work late or without evidence | Medium | High | Agree internal checkpoints, track issues and collect contribution links before the final deadline. | Tuğba |
+| Branch or merge problems delay integration | Medium | Medium | Use separate branches and reviewed PRs; integrate regularly and retain working history. | Berra |
+| Reports expose personal information | Medium | High | Minimize collected data, avoid publishing sensitive identifiers or contact details, and use safe demonstration data. | Aslıhan, with Ceren |
+| False reports or ownership claims reduce trust | Medium | Medium | Agree a proportionate claim/verification process; do not promise automatic ownership verification. | İrem, with Aslıhan |
 
 Likelihood and impact are initial qualitative team estimates and should be reviewed during planning.
 
@@ -76,7 +76,7 @@ The project proposes the MIT License, consistent with the license file currently
 
 ## 7. Items to Confirm Before Integration
 
-- Confirm the initial release features with K1 and K4.
-- Confirm that the system assumptions agree with K3's API draft.
+- Confirm the initial release features with İrem and Ceren.
+- Confirm that the system assumptions agree with Aslıhan's API draft.
 - Confirm MIT as the team's agreed license.
 - Agree an internal document collection deadline before the course submission deadline.
