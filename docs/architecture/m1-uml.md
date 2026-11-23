@@ -95,3 +95,31 @@ C4Component
     Rel(user_service, database, "Reads/Writes user records", "SQL")
 
 ```
+## Database ER Diagram (M1)
+ 
+```mermaid
+erDiagram
+    USERS {
+        string id PK
+        string full_name
+        string email UK
+        string phone_number
+        string password_hash
+        string role
+        boolean kvkk_accepted
+        string kvkk_accepted_at
+        string created_at
+        string updated_at
+    }
+ 
+    USER_SESSIONS {
+        string session_id PK
+        string user_id FK
+        string token_jti UK
+        string expires_at
+        string revoked_at
+        string created_at
+    }
+ 
+    USERS ||--o{ USER_SESSIONS : "has active or past sessions"
+ 
