@@ -112,4 +112,55 @@ The Campus Lost and Found Portal operates as an independent web application prov
 
 This matrix maps Functional Requirements (FR) to User Stories (US), OpenAPI Endpoints, and QA Validation Strategies.
 
-|
+| FR ID | Description | User Story | OpenAPI Endpoint | Verification Method |
+|---|---|---|---|---|
+| **FR-M1-01** | User Registration | US-01 | `POST /auth/register` | Automated Unit Test & Integration Test |
+| **FR-M1-02** | Form Field Validation | US-01 | `POST /auth/register` | Frontend & API Input Validation Test |
+| **FR-M1-03** | User Authentication | US-02 | `POST /auth/login` | Security & Token Verification Test |
+| **FR-M1-04** | User Logout | US-02 | Client-side / Token Invalidation | Manual Acceptance Test |
+| **FR-M1-05** | Role Assignment | US-01, US-02 | `GET /users/me` | Role-Based Access Control (RBAC) Test |
+| **FR-M1-06** | Profile Viewing | US-02 | `GET /users/me` | Integration Test |
+| **FR-M1-07** | KVKK / Privacy Consent | US-01 | `POST /auth/register` | Compliance Inspection & UI Test |
+| **FR-M2-01** | Lost Item Reporting | US-03 | `POST /items` | End-to-End API Test |
+| **FR-M2-02** | Found Item Reporting | US-04 | `POST /items` | End-to-End API Test |
+| **FR-M2-03** | Edit Item Listing | US-30 | `PUT /items/{itemId}` | Authorization & PUT Request Test |
+| **FR-M2-04** | Close Item Listing | US-31 | `PUT /items/{itemId}` (body: `{"status":"CLOSED"}`) | Status Transition Test |
+| **FR-M2-05** | Delete Item Listing | US-32 | `DELETE /items/{itemId}` | Owner Authorization Test |
+| **FR-M2-06** | Photo Upload | US-09 | `POST /items/{itemId}/photo` | Media Type & Size Boundary Test |
+| **FR-M2-07** | User Item List | US-10 | `GET /users/me/items` | Filtered GET Request Test |
+| **FR-M3-01** | Item Listing Pagination | US-05 | `GET /items` | Performance & Pagination Test |
+| **FR-M3-02** | Keyword Search | US-06 | `GET /items?q={query}` | Search Accuracy Test |
+| **FR-M3-03** | Category Filtering | US-07 | `GET /items?category={cat}` | Query Parameter Test |
+| **FR-M3-04** | Status/Location Filter | US-08 | `GET /items?status={st}` | Query Parameter Test |
+| **FR-M3-05** | Item Detail View | US-05 | `GET /items/{itemId}` | Data Masking / Privacy Check |
+| **FR-M3-06** | Category List API | US-07 | `GET /categories` | Schema Validation Test |
+| **FR-M3-07** | Email Alerts | US-40 | Async Email Event | Integration Mock Email Test |
+| **FR-M4-01** | Claim Creation | US-11 | `POST /items/{itemId}/claims` | API State Validation Test |
+| **FR-M4-02** | Claim Proof Details | US-11 | `POST /items/{itemId}/claims` | Schema Input Test |
+| **FR-M4-03** | Self-Claim Prevention | US-11 | `POST /items/{itemId}/claims` | Business Rule Validation Test |
+| **FR-M4-04** | Duplicate Claim Prevention| US-11 | `POST /items/{itemId}/claims` | 409 Conflict Response Test |
+| **FR-M4-05** | Claim Status Tracking | US-13 | `GET /users/me/claims` | Integration Test |
+| **FR-M4-06** | Claim Listing for Owner | US-12 | `GET /items/{itemId}/claims` | Authorization Test |
+| **FR-M5-01** | Staff Claim Decision | US-20, US-21 | `GET /items/{itemId}/claims`, `POST /claims/{claimId}/decision` | STAFF Role RBAC Test |
+| **FR-M5-02** | Handover Record | US-22 | `POST /claims/{claimId}/handover` *(proposed — OpenAPI change needed)* | Audit State Test |
+| **FR-M5-03** | Status Transition (Closed) | US-23 | `GET /items/{itemId}` *(updated via decision & handover)* | Lifecycle State Test |
+| **FR-M5-04** | Moderation | US-24 | `DELETE /items/{itemId}` | MODERATOR Role Authorization Test |
+| **FR-M5-05** | Category Management | US-25 | `POST /categories`, `PATCH /categories/{categoryId}` *(proposed — OpenAPI change needed)* | Admin CRUD Test |
+| **FR-M5-06** | User Role Management | US-26 | `GET /admin/users`, `PATCH /admin/users/{userId}` *(proposed — OpenAPI change needed)* | Security Privilege Test |
+| **FR-M5-07** | System Audit Log | US-27 | `GET /admin/audit-logs` *(proposed — OpenAPI change needed)* | Data Immutability Test |
+
+---
+
+## 6. Definition of Ready (DoR) & Definition of Done (DoD)
+
+### Definition of Ready (DoR)
+* User Story follows the format: "As a [role], I want to [action] so that [benefit]".
+* Acceptance Criteria are explicitly defined using Given-When-Then syntax.
+* Story points (effort estimate) are agreed upon by the team.
+* Dependencies on other User Stories or APIs are clearly listed.
+
+### Definition of Done (DoD)
+* Code / Documentation has been reviewed and approved by the assigned Reviewer.
+* Pull Request is merged into the `develop` branch without merge conflicts.
+* OpenAPI specification matches implemented/documented endpoints.
+* Acceptance criteria are validated through tests or documented reviews.
