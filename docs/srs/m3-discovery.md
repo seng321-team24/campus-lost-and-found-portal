@@ -19,10 +19,10 @@ Out of scope for M3: creating and editing listings and photos (M2), claim submis
 | FR-M3-01 | The system shall list all listings with pagination (default 20 per page, maximum 100), newest first. | US-05 | `GET /items` |
 | FR-M3-02 | The system shall search listings by keyword in title and description, case-insensitive. | US-06 | `GET /items?q=` |
 | FR-M3-03 | The system shall filter listings by category. | US-07 | `GET /items?categoryId=` |
-| FR-M3-04 | The system shall filter listings by event date range, location text and status; all filters shall be combinable with each other and with FR-M3-02 and FR-M3-03. | US-40 | `GET /items?dateFrom=&dateTo=&location=&status=` |
+| FR-M3-04 | The system shall filter listings by event date range, location text, type (lost or found) and status; all filters shall be combinable with each other and with FR-M3-02 and FR-M3-03. | US-40 | `GET /items?dateFrom=&dateTo=&location=&type=&status=` |
 | FR-M3-05 | The system shall display listing details (title, type, description, category, location, event date, status, photo, created date) and shall not display name, e-mail or phone number of any user. | US-08 | `GET /items/{itemId}` |
 | FR-M3-06 | The system shall provide the category list for filters and listing forms. | US-07 | `GET /categories` |
-| FR-M3-07 | The system shall send an e-mail to the registered address of (a) a claimant when the claim is approved or rejected and (b) a listing owner when the status of the listing changes by another user's action. | US-41, US-42 | internal, triggered by claim and listing operations |
+| FR-M3-07 | The system shall send an e-mail to the registered address of (a) a claimant when the claim is approved or rejected and (b) a listing owner when the status of the listing changes by another user's action. | US-41, US-42 | internal, triggered by `POST /items/{itemId}/claims` and `POST /claims/{claimId}/decision` |
 | FR-M3-08 | A failed e-mail shall not fail or roll back the action that triggered it; failed sends shall be retried up to 3 times and every failure shall be logged. | US-41, US-42 | internal |
 
 ## 3. Use cases
@@ -80,7 +80,7 @@ Story points use the same scale as the Sprint 1 backlog (1, 2, 3, 5, 8). Priorit
 | US-06 | Search and Discovery | As a user, I want to search for items by keyword so that I can find specific belongings. | High | 5 | US-05 |
 | US-07 | Search and Discovery | As a user, I want to filter items by category so that I can narrow down the results. | Medium | 3 | US-05 |
 | US-08 | Item Details | As a user, I want to view item details so that I can learn more about an item. | High | 2 | US-05 |
-| US-40 | Search and Discovery | As a user, I want to filter items by date, location and status so that I can find items from a specific time and place. | Medium | 3 | US-05 |
+| US-40 | Search and Discovery | As a user, I want to filter items by date, location, type and status so that I can find items from a specific time and place. | Medium | 3 | US-05 |
 | US-41 | Notifications (new epic) | As a claimant, I want an e-mail when my claim is approved or rejected so that I know the result without checking the portal. | Medium | 5 | M4 claim stories (US-11 to US-19), M5 decision stories (US-20 to US-29) |
 | US-42 | Notifications (new epic) | As a listing owner, I want an e-mail when the status of my listing changes so that I can follow what happens to it. | Medium | 3 | US-03, US-04, M4 and M5 stories |
 
@@ -129,10 +129,10 @@ Total effort of M3: 24 points. **Owner of all stories above: Aslıhan Kaçmaz (K
 | FR-M3-01 | US-05 | `GET /items` | NFR-M3-01, NFR-M3-03 |
 | FR-M3-02 | US-06 | `GET /items?q=` | NFR-M3-01 |
 | FR-M3-03 | US-07 | `GET /items?categoryId=` | NFR-M3-01 |
-| FR-M3-04 | US-40 | `GET /items?dateFrom=&dateTo=&location=&status=` | NFR-M3-01 |
+| FR-M3-04 | US-40 | `GET /items?dateFrom=&dateTo=&location=&type=&status=` | NFR-M3-01 |
 | FR-M3-05 | US-08 | `GET /items/{itemId}` | NFR-M3-02, NFR-M3-03 |
 | FR-M3-06 | US-07 | `GET /categories` | NFR-M3-03 |
-| FR-M3-07 | US-41, US-42 | internal (triggers: `POST /claims/{claimId}/decision`, `POST /items/{itemId}/claims`, `PUT /items/{itemId}`) | NFR-M3-04 |
+| FR-M3-07 | US-41, US-42 | internal (triggers: `POST /claims/{claimId}/decision`, `POST /items/{itemId}/claims`) | NFR-M3-04 |
 | FR-M3-08 | US-41, US-42 | internal | NFR-M3-04 |
 
 ## 7. Assumptions and open decisions
