@@ -9,7 +9,7 @@ This document contains the M2 parts of the architecture: a sequence diagram for 
 
 ## 1. Sequence Diagram - Create Listing and Upload Photo (UC-M2-02)
 
-Covers FR-M2-02 and FR-M2-06. The listing is created first (`POST /items`). The photo upload (`POST /items/{itemId}/photo`) is possible only after `201 Created`, because it needs the new `itemId`. A failed upload does not lose the listing (UC-M2-02, A4). The Photo Service only stores the file; the Listing Service writes the returned `photoUrl` to the item.
+Covers FR-M2-02 and FR-M2-06. The listing is created first (`POST /items`). The user may choose a photo while filling in the form (client-side check and local preview, same as the user flow), but the upload (`POST /items/{itemId}/photo`) is sent only after `201 Created`, because it needs the new listing id (`itemId` = `id` in the `201` response). A failed upload does not lose the listing (UC-M2-02, A4). The Photo Service only stores the file; the Listing Service writes the returned `photoUrl` to the item.
 
 ```mermaid
 sequenceDiagram
@@ -22,12 +22,17 @@ sequenceDiagram
     participant DB as Database
     participant FS as Photo Storage
 
-    U->>W: Fill found-item form and submit
+    U->>W: Fill found-item form
+    opt User adds a photo in the form
+        U->>W: Choose photo
+        W->>W: Client-side check (JPG/PNG, max 5 MB) and local preview
+    end
+    U->>W: Submit form
     W->>A: POST /items (Bearer token, ItemCreate, type=FOUND)
     A->>A: Validate token (M1 Auth)
     alt Token missing or expired
         A-->>W: 401 Unauthorized
-        W-->>U: Ask user to sign in
+        W-->>U: Ask user to sign in, form and photo kept
     else Token valid
         A->>S: createItem(ownerId, data)
         S->>S: Validate required fields
@@ -37,39 +42,43 @@ sequenceDiagram
             W-->>U: Show field errors, no listing created
         else Valid
             S->>DB: INSERT item (status = OPEN)
-            DB-->>S: itemId
+            DB-->>S: id
             S-->>A: Item
-            A-->>W: 201 Created (Item)
-            W-->>U: Listing saved, offer photo upload
-            opt User adds a photo (only after 201 Created)
-                U->>W: Select photo
-                W->>A: POST /items/{itemId}/photo (multipart file)
-                A->>S: checkOwner(itemId, userId)
-                alt Not the owner
-                    S-->>A: Forbidden
-                    A-->>W: 403 Forbidden
-                else Owner
-                    A->>P: validate(file)
-                    alt Type is not JPEG/PNG
-                        P-->>A: Unsupported type
-                        A-->>W: 415 Unsupported Media Type
-                        W-->>U: Only JPG and PNG files are supported
-                    else Size over 5 MB
-                        P-->>A: Too large
-                        A-->>W: 413 Payload Too Large
-                        W-->>U: File size cannot exceed 5 MB
-                    else Valid file
-                        P->>FS: Store file
-                        FS-->>P: photoUrl
-                        P-->>A: photoUrl
-                        A->>S: attachPhoto(itemId, photoUrl)
-                        S->>DB: UPDATE item SET photoUrl
-                        S-->>A: Item
-                        A-->>W: 200 OK (Item with photoUrl)
-                        W-->>U: Show listing with photo preview
+            A-->>W: 201 Created (Item, itemId = Item.id)
+            opt A photo was chosen in the form (upload only after 201)
+                W->>A: POST /items/{itemId}/photo (multipart/form-data)
+                A->>A: Validate token (M1 Auth)
+                alt Token expired during upload
+                    A-->>W: 401 Unauthorized
+                    W-->>U: Sign in again, listing already saved, retry upload with same itemId
+                else Token valid
+                    A->>S: checkOwner(itemId, userId)
+                    alt Not the owner
+                        S-->>A: Forbidden
+                        A-->>W: 403 Forbidden
+                    else Owner
+                        A->>P: validate(file)
+                        alt Type is not JPEG/PNG
+                            P-->>A: Unsupported type
+                            A-->>W: 415 Unsupported Media Type
+                            W-->>U: Listing saved, only JPG and PNG files are supported
+                        else Size over 5 MB
+                            P-->>A: Too large
+                            A-->>W: 413 Payload Too Large
+                            W-->>U: Listing saved, file must be 5 MB or smaller
+                        else Valid file
+                            P->>FS: Store file
+                            FS-->>P: photoUrl
+                            P-->>A: photoUrl
+                            A->>S: attachPhoto(itemId, photoUrl)
+                            S->>DB: UPDATE item SET photoUrl
+                            S-->>A: Item
+                            A-->>W: 200 OK (Item with photoUrl)
+                        end
                     end
                 end
             end
+            W-->>U: Listing published (with photo if uploaded)
         end
     end
 ```
