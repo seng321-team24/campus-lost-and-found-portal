@@ -157,6 +157,7 @@ paths:
                   description: Found at the library entrance.
                   categoryId: 2
                   location: Main Library
+                  handoverPoint: Security office
                   eventDate: '2026-11-04'
                   status: OPEN
                   ownerId: 7
@@ -291,6 +292,7 @@ paths:
                     description: Found at the library entrance.
                     categoryId: 2
                     location: Main Library
+                    handoverPoint: Security office
                     eventDate: '2026-11-04'
                     status: OPEN
                     ownerId: 7
@@ -319,6 +321,7 @@ paths:
               description: Found at the library entrance.
               categoryId: 2
               location: Main Library
+              handoverPoint: Security office
               eventDate: '2026-11-04'
       responses:
         '201':
@@ -334,6 +337,7 @@ paths:
                 description: Found at the library entrance.
                 categoryId: 2
                 location: Main Library
+                handoverPoint: Security office
                 eventDate: '2026-11-04'
                 status: OPEN
                 ownerId: 7
@@ -365,6 +369,7 @@ paths:
                 description: Found at the library entrance.
                 categoryId: 2
                 location: Main Library
+                handoverPoint: Security office
                 eventDate: '2026-11-04'
                 photoUrl: https://example.com/photos/42.jpg
                 status: OPEN
@@ -401,6 +406,7 @@ paths:
                 description: Found at the library entrance, left side.
                 categoryId: 2
                 location: Main Library
+                handoverPoint: Security office
                 eventDate: '2026-11-04'
                 status: OPEN
                 ownerId: 7
@@ -439,8 +445,9 @@ paths:
       tags: [Items]
       summary: Upload a photo for a listing (listing owner only)
       description: >
-        Backlog: US-09. Accepted formats and the maximum file size are to be
-        agreed by the team; JPEG and PNG are assumed in this draft.
+        Backlog: US-09. Accepted formats are JPEG and PNG, maximum file size
+        5 MB (proposed in NFR-M2-03 of module M2). A larger file returns 413,
+        another format returns 415.
       operationId: uploadItemPhoto
       security:
         - bearerAuth: []
@@ -469,6 +476,7 @@ paths:
                 description: Found at the library entrance.
                 categoryId: 2
                 location: Main Library
+                handoverPoint: Security office
                 eventDate: '2026-11-04'
                 photoUrl: https://example.com/photos/42.jpg
                 status: OPEN
@@ -737,6 +745,13 @@ components:
         location:
           type: string
           description: Approximate place where the item was lost or found
+        handoverPoint:
+          type: string
+          description: >
+            Where the finder left the item, for example the security office
+            (FR-M2-02, US-04). Required when type is FOUND; not used for LOST
+            listings. OpenAPI 3.0 cannot express this condition, so the server
+            checks it and returns 400 if it is missing.
         eventDate:
           type: string
           format: date
@@ -755,6 +770,9 @@ components:
           type: integer
         location:
           type: string
+        handoverPoint:
+          type: string
+          description: Where the finder left the item (only for FOUND listings)
         eventDate:
           type: string
           format: date
