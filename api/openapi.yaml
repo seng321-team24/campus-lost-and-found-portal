@@ -19,7 +19,12 @@ info:
     Open decisions that may change this draft: login method (ordinary
     credentials are assumed), allowed item categories, accepted image formats
     and maximum image size.
-  version: 0.1.0
+
+    E-mail notifications (no endpoint): the system sends an e-mail to the
+    registered address of the user when a claim is approved or rejected and
+    when the status of a listing changes by another user's action. They are
+    triggered by createClaim, decideClaim and updateItem.
+  version: 0.2.0
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -215,8 +220,10 @@ paths:
       summary: List, search and filter listings
       description: >
         Backlog: US-05 (view all listings), US-06 (keyword search), US-07
-        (category filter). Proposal 6.1: search by name, filter by category
-        and status.
+        (category filter), US-40 (date, location and status filter).
+        Proposal 6.1: search by name, filter by category and status. Filters
+        can be combined. A date range with dateFrom later than dateTo returns
+        400.
       operationId: listItems
       parameters:
         - name: type
@@ -237,6 +244,23 @@ paths:
         - name: q
           in: query
           description: Keyword search in title and description (US-06)
+          schema:
+            type: string
+        - name: dateFrom
+          in: query
+          description: Only listings with an event date on or after this date (US-40)
+          schema:
+            type: string
+            format: date
+        - name: dateTo
+          in: query
+          description: Only listings with an event date on or before this date (US-40)
+          schema:
+            type: string
+            format: date
+        - name: location
+          in: query
+          description: Text that must appear in the location of the listing (US-40)
           schema:
             type: string
         - name: page
@@ -445,6 +469,7 @@ paths:
                 description: Found at the library entrance.
                 categoryId: 2
                 location: Main Library
+                eventDate: '2026-11-04'
                 photoUrl: https://example.com/photos/42.jpg
                 status: OPEN
                 ownerId: 7
@@ -620,9 +645,9 @@ components:
       type: string
       description: >
         OPEN while the listing is active, CLAIM_PENDING while a claim awaits
-        review, CLAIMED after a claim is accepted, CLOSED when the listing is
-        closed.
-      enum: [OPEN, CLAIM_PENDING, CLAIMED, CLOSED]
+        review, CLAIMED after a claim is accepted, RETURNED after staff record
+        the handover of the item, CLOSED when the listing is closed.
+      enum: [OPEN, CLAIM_PENDING, CLAIMED, RETURNED, CLOSED]
 
     ClaimStatus:
       type: string
@@ -736,7 +761,6 @@ components:
         status:
           $ref: '#/components/schemas/ItemStatus'
 
-    
     Item:
       allOf:
         - $ref: '#/components/schemas/ItemCreate'
@@ -893,7 +917,6 @@ components:
       description: The file format is not supported
       content:
         application/json:
-    
           schema:
             $ref: '#/components/schemas/Error'
           example:
