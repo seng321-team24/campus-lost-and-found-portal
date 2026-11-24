@@ -6,7 +6,7 @@
 
 ## 1. Sequence Diagram: User Authentication (Login Flow)
 
-```
+```mermaid
 sequenceDiagram
     autonumber
     actor User as Campus User
@@ -29,12 +29,11 @@ sequenceDiagram
         FE->>FE: Store JWT in LocalStorage / Cookie
         FE-->>User: Redirect to User Profile / Dashboard
     end
-
 ```
 
 ## 2. Class Diagram: User and Role Domain Model
 
-```
+```mermaid
 classDiagram
     class User {
         +UUID id
@@ -65,12 +64,11 @@ classDiagram
 
     User "1" -- "1" UserRole : assigned
     User ..> AuthTokenPayload : generates
-
 ```
 
 ## 3. C4 Level 3 Component Diagram: Auth & Identity Component
 
-```
+```mermaid
 C4Component
     title Component Diagram for M1 - Auth & Identity Architecture
 
@@ -93,8 +91,8 @@ C4Component
     Rel(user_ctrl, user_service, "Delegates profile logic")
     Rel(auth_service, user_service, "Fetches user entity")
     Rel(user_service, database, "Reads/Writes user records", "SQL")
-
 ```
+
 ## Database ER Diagram (M1)
  
 ```mermaid
@@ -122,4 +120,4 @@ erDiagram
     }
  
     USERS ||--o{ USER_SESSIONS : "has active or past sessions"
- 
+ ```
