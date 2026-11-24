@@ -6,7 +6,7 @@
 
 ## 1. Sequence Diagram: User Authentication (Login Flow)
 
-```
+```mermaid
 sequenceDiagram
     autonumber
     actor User as Campus User
@@ -34,7 +34,7 @@ sequenceDiagram
 
 ## 2. Class Diagram: User and Role Domain Model
 
-```
+mermaid
 classDiagram
     class User {
         +UUID id
@@ -70,7 +70,7 @@ classDiagram
 
 ## 3. C4 Level 3 Component Diagram: Auth & Identity Component
 
-```
+```mermaid
 C4Component
     title Component Diagram for M1 - Auth & Identity Architecture
 
@@ -122,4 +122,4 @@ erDiagram
     }
  
     USERS ||--o{ USER_SESSIONS : "has active or past sessions"
- 
+ ```
