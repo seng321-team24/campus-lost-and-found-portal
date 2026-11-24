@@ -96,7 +96,7 @@ stateDiagram-v2
 | `[*] → OPEN` | Listing owner | M2 | Every new listing starts as `OPEN`. |
 | `OPEN → CLOSED` | Listing owner | M2 | FR-M2-04. Only from `OPEN`; rejected from `CLAIM_PENDING` and `CLAIMED`. |
 | `OPEN → CLAIM_PENDING` | Claimant | M4 | A claim is submitted. |
-| `CLAIM_PENDING → CLAIMED / OPEN` | Staff | M5 | Claim decision (`/claims/{id}/decision`). |
+| `CLAIM_PENDING → CLAIMED / OPEN` | Staff | M5 | Claim decision (`/claims/{claimId}/decision`). |
 | `CLAIMED → CLOSED` | - | M5 | **Not in the diagram (open decision).** FR-M2-04 does not allow the owner to close a `CLAIMED` listing. Whether staff close it after handover is decided with M5 (Berra). |
 | Delete | Owner or moderator | M2 / M5 | FR-M2-05. **Open decision:** deleting a listing with an active claim. |
 
@@ -124,7 +124,7 @@ flowchart LR
     fs[("Photo Storage<br/>(Container)")]
 
     user --> web
-    web -->|"JSON over HTTPS"| auth
+    web -->|"HTTPS: JSON, multipart/form-data for photos"| auth
     auth --> ctrl
     auth --> photoCtrl
     ctrl --> svc
