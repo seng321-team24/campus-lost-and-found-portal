@@ -123,7 +123,7 @@ This matrix maps Functional Requirements (FR) to User Stories (US), OpenAPI Endp
 | **FR-M2-01** | Lost Item Reporting | US-03 | `POST /items` | End-to-End API Test |
 | **FR-M2-02** | Found Item Reporting | US-04 | `POST /items` | End-to-End API Test |
 | **FR-M2-03** | Edit Item Listing | US-30 | `PUT /items/{itemId}` | Authorization & PUT Request Test |
-| **FR-M2-04** | Close Item Listing | US-31 | `PATCH /items/{itemId}/status` *(proposed — OpenAPI change needed)* | Status Transition Test |
+| **FR-M2-04** | Close Item Listing | US-31 | `PUT /items/{itemId}` (body: `{"status":"CLOSED"}`) | Status Transition Test |
 | **FR-M2-05** | Delete Item Listing | US-32 | `DELETE /items/{itemId}` | Owner Authorization Test |
 | **FR-M2-06** | Photo Upload | US-09 | `POST /items/{itemId}/photo` | Media Type & Size Boundary Test |
 | **FR-M2-07** | User Item List | US-10 | `GET /users/me/items` | Filtered GET Request Test |
@@ -142,5 +142,5 @@ This matrix maps Functional Requirements (FR) to User Stories (US), OpenAPI Endp
 | **FR-M4-06** | Claim Listing for Owner | US-12 | `GET /items/{itemId}/claims` | Authorization Test |
 | **FR-M5-01** | Staff Claim Decision | US-12 | `POST /claims/{claimId}/decision` | Staff Role RBAC Test |
 | **FR-M5-02** | Handover Record | US-20 | `POST /claims/{claimId}/handover` *(proposed — OpenAPI change needed)* | Audit State Test |
-| **FR-M5-03** | Status Transition (Returned)| US-21 | `PATCH /items/{itemId}/sta
+| **FR-M5-03** | Status Transition (Returned)| US-21 | `PATCH /items/{itemId}/status` *(proposed 
  
