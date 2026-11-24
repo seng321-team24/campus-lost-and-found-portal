@@ -23,7 +23,7 @@ info:
     E-mail notifications (no endpoint): the system sends an e-mail to the
     registered address of the user when a claim is approved or rejected and
     when the status of a listing changes by another user's action. They are
-    triggered by createClaim, decideClaim and updateItem.
+    triggered by createClaim and decideClaim.
   version: 0.2.0
   license:
     name: MIT
