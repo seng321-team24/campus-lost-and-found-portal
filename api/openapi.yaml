@@ -19,7 +19,12 @@ info:
     Open decisions that may change this draft: login method (ordinary
     credentials are assumed), allowed item categories, accepted image formats
     and maximum image size.
-  version: 0.1.0
+
+    E-mail notifications (no endpoint): the system sends an e-mail to the
+    registered address of the user when a claim is approved or rejected and
+    when the status of a listing changes by another user's action. They are
+    triggered by createClaim and decideClaim.
+  version: 0.2.0
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -152,6 +157,7 @@ paths:
                   description: Found at the library entrance.
                   categoryId: 2
                   location: Main Library
+                  handoverPoint: Security office
                   eventDate: '2026-11-04'
                   status: OPEN
                   ownerId: 7
@@ -215,8 +221,10 @@ paths:
       summary: List, search and filter listings
       description: >
         Backlog: US-05 (view all listings), US-06 (keyword search), US-07
-        (category filter). Proposal 6.1: search by name, filter by category
-        and status.
+        (category filter), US-40 (date, location and status filter).
+        Proposal 6.1: search by name, filter by category and status. Filters
+        can be combined. A date range with dateFrom later than dateTo returns
+        400.
       operationId: listItems
       parameters:
         - name: type
@@ -237,6 +245,23 @@ paths:
         - name: q
           in: query
           description: Keyword search in title and description (US-06)
+          schema:
+            type: string
+        - name: dateFrom
+          in: query
+          description: Only listings with an event date on or after this date (US-40)
+          schema:
+            type: string
+            format: date
+        - name: dateTo
+          in: query
+          description: Only listings with an event date on or before this date (US-40)
+          schema:
+            type: string
+            format: date
+        - name: location
+          in: query
+          description: Text that must appear in the location of the listing (US-40)
           schema:
             type: string
         - name: page
@@ -267,6 +292,7 @@ paths:
                     description: Found at the library entrance.
                     categoryId: 2
                     location: Main Library
+                    handoverPoint: Security office
                     eventDate: '2026-11-04'
                     status: OPEN
                     ownerId: 7
@@ -295,6 +321,7 @@ paths:
               description: Found at the library entrance.
               categoryId: 2
               location: Main Library
+              handoverPoint: Security office
               eventDate: '2026-11-04'
       responses:
         '201':
@@ -310,6 +337,7 @@ paths:
                 description: Found at the library entrance.
                 categoryId: 2
                 location: Main Library
+                handoverPoint: Security office
                 eventDate: '2026-11-04'
                 status: OPEN
                 ownerId: 7
@@ -341,6 +369,7 @@ paths:
                 description: Found at the library entrance.
                 categoryId: 2
                 location: Main Library
+                handoverPoint: Security office
                 eventDate: '2026-11-04'
                 photoUrl: https://example.com/photos/42.jpg
                 status: OPEN
@@ -377,6 +406,7 @@ paths:
                 description: Found at the library entrance, left side.
                 categoryId: 2
                 location: Main Library
+                handoverPoint: Security office
                 eventDate: '2026-11-04'
                 status: OPEN
                 ownerId: 7
@@ -415,8 +445,9 @@ paths:
       tags: [Items]
       summary: Upload a photo for a listing (listing owner only)
       description: >
-        Backlog: US-09. Accepted formats and the maximum file size are to be
-        agreed by the team; JPEG and PNG are assumed in this draft.
+        Backlog: US-09. Accepted formats are JPEG and PNG, maximum file size
+        5 MB (proposed in NFR-M2-03 of module M2). A larger file returns 413,
+        another format returns 415.
       operationId: uploadItemPhoto
       security:
         - bearerAuth: []
@@ -445,6 +476,8 @@ paths:
                 description: Found at the library entrance.
                 categoryId: 2
                 location: Main Library
+                handoverPoint: Security office
+                eventDate: '2026-11-04'
                 photoUrl: https://example.com/photos/42.jpg
                 status: OPEN
                 ownerId: 7
@@ -620,9 +653,9 @@ components:
       type: string
       description: >
         OPEN while the listing is active, CLAIM_PENDING while a claim awaits
-        review, CLAIMED after a claim is accepted, CLOSED when the listing is
-        closed.
-      enum: [OPEN, CLAIM_PENDING, CLAIMED, CLOSED]
+        review, CLAIMED after a claim is accepted, RETURNED after staff record
+        the handover of the item, CLOSED when the listing is closed.
+      enum: [OPEN, CLAIM_PENDING, CLAIMED, RETURNED, CLOSED]
 
     ClaimStatus:
       type: string
@@ -712,6 +745,13 @@ components:
         location:
           type: string
           description: Approximate place where the item was lost or found
+        handoverPoint:
+          type: string
+          description: >
+            Where the finder left the item, for example the security office
+            (FR-M2-02, US-04). Required when type is FOUND; not used for LOST
+            listings. OpenAPI 3.0 cannot express this condition, so the server
+            checks it and returns 400 if it is missing.
         eventDate:
           type: string
           format: date
@@ -730,13 +770,15 @@ components:
           type: integer
         location:
           type: string
+        handoverPoint:
+          type: string
+          description: Where the finder left the item (only for FOUND listings)
         eventDate:
           type: string
           format: date
         status:
           $ref: '#/components/schemas/ItemStatus'
 
-    
     Item:
       allOf:
         - $ref: '#/components/schemas/ItemCreate'
@@ -893,7 +935,6 @@ components:
       description: The file format is not supported
       content:
         application/json:
-    
           schema:
             $ref: '#/components/schemas/Error'
           example:

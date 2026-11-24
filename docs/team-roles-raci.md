@@ -37,6 +37,8 @@ R = Responsible (performs the work); A = Accountable (owns completion); C = Cons
 | CONTRIBUTIONS.md | C | A/R | C | C | C |
 | ZIP and Teams submission | I | A/R | C | R | R |
 
+> **Note (Sprint 1 actual delivery):** By later team agreement, the Sprint 1 ZIP was prepared and submitted on Teams by Berra (K5), as recorded in `CONTRIBUTIONS.md`. The row above shows the original allocation.
+
 For CONTRIBUTIONS.md, all members provide their actual work and evidence links to K2. This makes explicit the information collection needed by the original allocation.
 
 ## Contribution and Review Workflow
@@ -47,3 +49,35 @@ For CONTRIBUTIONS.md, all members provide their actual work and evidence links t
 4. Review assignments: K1 reviews K2; K2 reviews K3; K3 reviews K4; K4 reviews K5; K5 reviews K1.
 5. Record actual issue, PR and commit links in CONTRIBUTIONS.md. Review unresolved questions with the author; do not approve work without understanding the changes.
 6. K2 collects the reviewed documents; K5 prepares the final merge/tag and checks the archive; K2 submits the agreed package and repository link.
+
+---
+
+## Sprint 2 Update
+
+Status: Sprint 2 (24 November 2026). Roles are unchanged. Each member owns one module (M1–M5) with its SRS, NFR, user flow, Figma screens and UML.
+
+| ID | Sprint 2 module |
+|---|---|
+| K1 İrem | M1 Identity, auth and profile; main SRS and traceability |
+| K2 Tuğba | M2 Listing management |
+| K3 Aslıhan | M3 Search and discovery; C4 L1–L2; OpenAPI updates |
+| K4 Ceren | M4 Claims; main NFR document |
+| K5 Berra | M5 Approval and admin; Figma main file and style guide |
+
+### Sprint 2 RACI (delivery activities)
+
+| Activity | K1 İrem | K2 Tuğba | K3 Aslıhan | K4 Ceren | K5 Berra |
+|---|---|---|---|---|---|
+| M1 module documents | A/R | I | C | C | I |
+| M2 module documents | C | A/R | C | C | I |
+| M3 module documents | C | I | A/R | C | I |
+| M4 module documents | C | I | C | A/R | C |
+| M5 module documents | C | I | C | C | A/R |
+| Product backlog refinement | A/R | C | C | C | C |
+| OpenAPI updates | C | C | A/R | C | I |
+| Figma main file and style guide | I | C | C | C | A/R |
+| CONTRIBUTIONS.md (Sprint 2) | C | A/R | C | C | C |
+| Merge to main, `sprint-2` tag and release | I | C | I | I | A/R |
+| ZIP and Teams submission | I | A/R | I | I | C |
+
+The ZIP and Teams submission owner is **Tuğba (K2)** in Sprint 2; this matches CONTRIBUTIONS.md. Berra (K5) creates the tag and performs the final archive check (C).
