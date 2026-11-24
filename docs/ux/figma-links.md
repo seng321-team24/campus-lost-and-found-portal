@@ -9,8 +9,8 @@
 
 | Item | Link |
 |---|---|
-| **Main Figma file (all modules)** | PASTE-THE-FIGMA-LINK-HERE |
-| **Prototype (clickable)** | PASTE-THE-PROTOTYPE-LINK-HERE |
+| **Main Figma file (all modules)** |https://www.figma.com/design/ahb5vkWYGgXs1UmzzxNOvX/Campus-Lost-and-Found-Portal---Team-24?node-id=1-7&t=K30w3LhxnVy7iGIF-1|
+| **Prototype (clickable)** |https://www.figma.com/proto/ahb5vkWYGgXs1UmzzxNOvX/Campus-Lost-and-Found-Portal---Team-24?node-id=1-2&t=K30w3LhxnVy7iGIF-1 |
 
 Access: the link is set to **"Anyone with the link can view"**. It was tested in a private (incognito) browser window. All team members have **edit** access.
 
