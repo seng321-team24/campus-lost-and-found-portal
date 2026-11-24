@@ -74,7 +74,7 @@ The Campus Lost and Found Portal operates as an independent web application prov
 * **Audit & Moderation Data:** Immutable logs recording privileged administrative actions, moderation deletions, role updates, and handover state transitions.
 
 ### 4.2 Identifiers
-* Primary and path resource identifiers use standardized naming aligned with the API contract: `userId`, `itemId`, `claimId`, and `sessionId` (UUID or unique system identifier).
+* Primary and path resource identifiers use standardized naming aligned with the API contract: `userId`, `itemId`, `claimId`, `categoryId`, and `sessionId` (UUID or unique system identifier).
 * Unique business/lookup constraints apply to `email` (unique per user account) and `token_jti` (unique per session token).
 * Requirement and story traceability uses standardized IDs: `FR-Mx-nn`, `NFR-Mx-nn`, `UC-Mx-nn`, and `US-nn`.
 
@@ -140,13 +140,13 @@ This matrix maps Functional Requirements (FR) to User Stories (US), OpenAPI Endp
 | **FR-M4-04** | Duplicate Claim Prevention| US-11 | `POST /items/{itemId}/claims` | 409 Conflict Response Test |
 | **FR-M4-05** | Claim Status Tracking | US-13 | `GET /users/me/claims` | Integration Test |
 | **FR-M4-06** | Claim Listing for Owner | US-12 | `GET /items/{itemId}/claims` | Authorization Test |
-| **FR-M5-01** | Staff Claim Decision | US-12 | `POST /claims/{claimId}/decision` | Staff Role RBAC Test |
-| **FR-M5-02** | Handover Record | US-20 | `POST /claims/{claimId}/handover` *(proposed — OpenAPI change needed)* | Audit State Test |
-| **FR-M5-03** | Status Transition (Returned)| US-21 | `PATCH /items/{itemId}/status` *(proposed — OpenAPI change needed)* | Lifecycle State Test |
-| **FR-M5-04** | Admin Moderation | US-22 | `DELETE /admin/items/{itemId}` *(proposed — OpenAPI change needed)* | Admin Role Authorization Test |
-| **FR-M5-05** | Category Management | US-23 | `POST /admin/categories` *(proposed — OpenAPI change needed)* | Admin CRUD Test |
-| **FR-M5-06** | User Role Management | US-24 | `PATCH /admin/users/{id}/role` *(proposed — OpenAPI change needed)* | Security Privilege Test |
-| **FR-M5-07** | System Audit Log | US-25 | `GET /admin/audit-logs` *(proposed — OpenAPI change needed)* | Data Immutability Test |
+| **FR-M5-01** | Staff Claim Decision | US-20, US-21 | `GET /items/{itemId}/claims`, `POST /claims/{claimId}/decision` | Staff Role RBAC Test |
+| **FR-M5-02** | Handover Record | US-22 | `POST /claims/{claimId}/handover` *(proposed — OpenAPI change needed)* | Audit State Test |
+| **FR-M5-03** | Status Transition (Closed) | US-23 | `GET /items/{itemId}` *(updated via decision & handover)* | Lifecycle State Test |
+| **FR-M5-04** | Admin Moderation | US-24 | `DELETE /items/{itemId}` | Admin Role Authorization Test |
+| **FR-M5-05** | Category Management | US-25 | `POST /categories`, `PATCH /categories/{categoryId}` *(proposed — OpenAPI change needed)* | Admin CRUD Test |
+| **FR-M5-06** | User Role Management | US-26 | `GET /admin/users`, `PATCH /admin/users/{userId}` *(proposed — OpenAPI change needed)* | Security Privilege Test |
+| **FR-M5-07** | System Audit Log | US-27 | `GET /admin/audit-logs` *(proposed — OpenAPI change needed)* | Data Immutability Test |
 
 ---
 
