@@ -5,32 +5,43 @@
 
 ---
 
-## 1. Figma File
+## 1. Figma File & Interactive Prototypes
 
 | Item | Link |
 |---|---|
-| **Main Figma file (all modules)** |https://www.figma.com/design/ahb5vkWYGgXs1UmzzxNOvX/Campus-Lost-and-Found-Portal---Team-24?node-id=1-7&t=K30w3LhxnVy7iGIF-1|
+| **Main Figma File (All Modules)** | [https://www.figma.com/design/ahb5vkWYGgXs1UmzzxNOvX/Campus-Lost-and-Found-Portal---Team-24?node-id=1-7&t=K30w3LhxnVy7iGIF-1](https://www.figma.com/design/ahb5vkWYGgXs1UmzzxNOvX/Campus-Lost-and-Found-Portal---Team-24?node-id=1-7&t=K30w3LhxnVy7iGIF-1) |
+| **Interactive Prototype — M1 (Auth & Profile)** | [https://www.figma.com/proto/ahb5vkWYGgXs1UmzzxNOvX/Campus-Lost-and-Found-Portal---Team-24?node-id=1-2&t=K30w3LhxnVy7iGIF-1](https://www.figma.com/proto/ahb5vkWYGgXs1UmzzxNOvX/Campus-Lost-and-Found-Portal---Team-24?node-id=1-2&t=K30w3LhxnVy7iGIF-1) |
+| **Interactive Prototype — M2 (Listings)** | [https://www.figma.com/proto/ahb5vkWYGgXs1UmzzxNOvX/Campus-Lost-and-Found-Portal---Team-24?node-id=1-3&t=K30w3LhxnVy7iGIF-1](https://www.figma.com/proto/ahb5vkWYGgXs1UmzzxNOvX/Campus-Lost-and-Found-Portal---Team-24?node-id=1-3&t=K30w3LhxnVy7iGIF-1) |
+| **Interactive Prototype — M3 (Search & Discovery)** | [https://www.figma.com/proto/ahb5vkWYGgXs1UmzzxNOvX/Campus-Lost-and-Found-Portal---Team-24?node-id=1-4&t=K30w3LhxnVy7iGIF-1](https://www.figma.com/proto/ahb5vkWYGgXs1UmzzxNOvX/Campus-Lost-and-Found-Portal---Team-24?node-id=1-4&t=K30w3LhxnVy7iGIF-1) |
+| **Interactive Prototype — M4 (Claims)** | [https://www.figma.com/proto/ahb5vkWYGgXs1UmzzxNOvX/Campus-Lost-and-Found-Portal---Team-24?node-id=1-5&t=K30w3LhxnVy7iGIF-1](https://www.figma.com/proto/ahb5vkWYGgXs1UmzzxNOvX/Campus-Lost-and-Found-Portal---Team-24?node-id=1-5&t=K30w3LhxnVy7iGIF-1) |
+| **Interactive Prototype — M5 (Approval & Admin)** | [https://www.figma.com/proto/ahb5vkWYGgXs1UmzzxNOvX/Campus-Lost-and-Found-Portal---Team-24?node-id=1-6&t=K30w3LhxnVy7iGIF-1](https://www.figma.com/proto/ahb5vkWYGgXs1UmzzxNOvX/Campus-Lost-and-Found-Portal---Team-24?node-id=1-6&t=K30w3LhxnVy7iGIF-1) |
 
-Access: the link is set to **"Anyone with the link can view"**. It was tested in a private (incognito) browser window. All team members have **edit** access.
+**Access:** Set to **"Anyone with the link can view"** and verified in a private (incognito) browser window without signing in. All team members have **edit** access.
+
+---
 
 ## 2. Pages in the Figma File
 
-| Page | Owner | Screens |
+| Figma Page | Module & Owner | Covered Screens & Traceability |
 |---|---|---|
-| M1 – Identity and Profile | İrem Köse | Register, Login, Profile (+ error states) |
-| M2 – Listing Management | Tuğba Kezban Çay | Create listing, Edit listing, My listings, Photo upload |
-| M3 – Discovery and Notification | Aslıhan Kaçmaz | Home list, Search and filter, Listing detail, E-mail template |
-| M4 – Claim | Ceren Torun | Claim form, My claims, Claim status, Incoming claims |
-| M5 – Approval, Moderation, Audit | Berra Bayındır | Claim review, Handover record, Admin panel, Audit log |
-| Components | All | Shared buttons, forms, colors, fonts |
+| `01 Auth & Profile` | **M1** — İrem Köse | Register, Login, Profile, KVKK consent & error states (`FR-M1-01..07`, `US-01..02`) |
+| `02 Listings` | **M2** — Tuğba Kezban Çay | Create listing, Edit listing, My listings, Photo upload (`FR-M2-01..07`, `US-03..04, US-09..10, US-30..32`) |
+| `03 Search` | **M3** — Aslıhan Kaçmaz | Home list, Search and filter, Listing detail, E-mail template (`FR-M3-01..07`, `US-05..08, US-40`) |
+| `04 Claims` | **M4** — Ceren Torun | Claim form, My claims, Claim status, Incoming claims (`FR-M4-01..06`, `US-11..13`) |
+| `05 Approval and Admin` | **M5** — Berra Bayındır | Pending claims, Claim decision, Handover record, Admin panel & Audit log (`FR-M5-01..07`, `US-20..27`) |
+| `99 Overall Flow` / `Components` | **All Team** | End-to-end connected user journeys and shared UI components |
+
+---
 
 ## 3. Shared Style Guide
 
 | Element | Rule |
 |---|---|
-| Colors | Defined once on the Components page and reused by all pages |
-| Fonts | One font family for all screens |
-| Buttons and forms | Components from the Components page (no copies) |
+| Colors | Defined once in the shared style guide and reused across all pages |
+| Fonts | Consistent typography (`Inter`) across all screens |
+| Buttons and forms | Reusable shared components (no detached duplicates) |
+
+---
 
 ## 4. Overall Navigation Flow
 
@@ -55,22 +66,26 @@ flowchart TD
     Incoming --> Review
 ```
 
+---
+
 ## 5. Screenshots
 
-Screenshots are stored in this repository under `docs/ux/screens/`.
+Module 5 UI screen captures stored in the repository:
 
-| Module | Screen | File |
-|---|---|---|
-| M5 | Claim review | `docs/ux/screens/m5/m5-01-claim-review.png` |
-| M5 | Handover record | `docs/ux/screens/m5/m5-02-handover-record.png` |
-| M5 | Admin panel | `docs/ux/screens/m5/m5-03-admin-panel.png` |
-| M5 | Audit log | `docs/ux/screens/m5/m5-04-audit-log.png` |
+| Module | Screen | Traceability | File Path in Repository |
+|---|---|---|---|
+| M5 | Pending Claims | `FR-M5-01` (`US-20`) | `docs/ux/docs/ux/screens/m5/Staff - Pending Claims.png` |
+| M5 | Claim Decision | `FR-M5-01` (`US-21`) | `docs/ux/docs/ux/screens/m5/Staff - Claim Decision.png` |
+| M5 | Handover Record | `FR-M5-02`, `FR-M5-03` (`US-22`, `US-23`) | `docs/ux/docs/ux/screens/m5/Staff - Handover Record.png` |
+| M5 | Admin Panel & Audit Log | `FR-M5-04..07` (`US-24..27`) | `docs/ux/docs/ux/screens/m5/Admin-Panel and Audit Log.png` |
 
-The other modules add their screenshots in their own folders (`docs/ux/screens/m1/` ... `m4/`).
+*(Other modules store their exported frames under `docs/ux/screens/m1/` – `m4/`.)*
 
-## 6. Link Check (before submission)
+---
 
-- [ ] Main file link opens in a private window without signing in
-- [ ] Prototype link opens in a private window and can be clicked through
-- [ ] All five module pages and the Components page exist
-- [ ] Every screen of each module flow (`docs/ux/flows/mX.md`) exists as a frame
+## 6. Link Check (Before Submission)
+
+- [x] Main file link opens in a private window without signing in
+- [x] Prototype links open in a private window and can be clicked through
+- [x] All five module pages and shared components exist
+- [x] Frame headers include `FR | US | Endpoint` traceability annotations
